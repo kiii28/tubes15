@@ -1,0 +1,129 @@
+package main
+
+import "fmt"
+
+/* kita ingin membuat sebuah applikasi untuk simulasi pasar saham, dengan tampilan awal dengan beberapa pilihan.
+Memperlihatkan daftar saham, beli seham, jual saham, menampilkan portofolio, menampilkan statistik untung/rugi
+kita beranggapan bahwa tiap memjalankan applikasi ini adalah orang yang berbeda
+*/
+
+type pengguna struct {
+	nama, SahamDimiliki string
+}
+
+type transaksi struct {
+	Pembelian, penjualan, lot, lembarSaham int // Lot adlah minimal pembelian saham, 1 Lot = 100 Lembar saham
+	namaTransaksi, idsaham                 string
+}
+
+type saham struct {
+	id, namasaham      string
+	volume, hargaSaham float64
+}
+
+type tabtr [150]transaksi //array transaksi
+type tabpe [15]pengguna   //array pengguna
+type tabsa [10]saham      // array saham
+
+var daftarSaham tabsa
+
+var transaksi tabtr
+var jumlahTransaksi int = 0
+
+var portofolio tabpe
+var jumlahPortofolio int = 0
+
+var saldo int = 1000000
+var modalAwal int = 1000000
+
+func inisialisasiDataSaham() {
+	var dataSaham tabsa
+	dataSaham[0] = saham{id: "BBCA", namasaham: "Bank Central Asia", hargaSaham: 9275} //Harga Saham dalam 1 lebar saham
+	dataSaham[1] = saham{id: "BBRI", namasaham: "Bank rakyat Indonesia", hargaSaham: 4260}
+	dataSaham[2] = saham{id: "BMRI", namasaham: "Bank Mandiri", hargaSaham: 5275}
+	dataSaham[3] = saham{id: "TLKM", namasaham: "Telkom Indonesia", hargaSaham: 2660}
+	dataSaham[4] = saham{id: "ASII", namasaham: "Astra Indonesia", hargaSaham: 4820}
+	dataSaham[5] = saham{id: "UNVR", namasaham: "Uniliver Indonesia", hargaSaham: 4500}
+	dataSaham[6] = saham{id: "ICBP", namasaham: "Indofood CBP Sukses Makmur", hargaSaham: 10000}
+	dataSaham[7] = saham{id: "ADRO", namasaham: "Adaro Energy Indonesia", hargaSaham: 3000}
+	dataSaham[8] = saham{id: "AKRA", namasaham: "AKR Corpindo", hargaSaham: 1300}
+	dataSaham[9] = saham{id: "ACES", namasaham: "Ace Hardware Indonesia", hargaSaham: 545}
+}
+
+func tampilkanDaftarSaham() { // Daftar-daftar saham yang dapat dibeli
+	var data tabsa
+	for i := 0; i < 10; i++ {
+		if data[i].ID != "" {
+			fmt.Printf("| %-5s | %-25s | Rp%-15d |\n", data[i].ID, data[i].NamaSaham, data[i].Harga)
+		}
+	}
+}
+
+func beli() { //beli saham apa, kode sham
+
+}
+func jual() {
+
+}
+func portofolioPengguna() { //nama pengguna, saham dimiliki, nilai saham, keuntungan, kerugian
+
+}
+func tampilkanPortofolioPengguna() {
+
+}
+func tampilkanStatistikUntungRugi() {
+
+}
+func simulasiTrading() { //masih dalam perencanaan tergantung boleh atau tidak penggunaan import "math/rand"
+	/* idenya adalah asumsikan bahwa naik turun harga saham memiliki kemungkinan untung 3 : 1 rugi
+	anggap kita mempunya angka random 1-5 dengan jika dapat 1 tidak ada perubahan jika dapat 2 Harga turun sekian dalam %
+	jika dapat 3-5 harga naik sekian dalam %. anggap tiap kenaikkan adalah dalam rentang 1 bulan sehingga masukkan
+	misal 4 jadi kita seperti perkembangan harga saham dalam 4 bulan atau 4 kali naik / turun */
+
+}
+
+func urutDataDescedingHarga(data *tabsa, ndata int) { //untuk mengurutkan data saham dari besar ke kecil berdasarkan Harga saham
+	var i, idx, pass int
+	var temp int //penyimpanan data sementara
+	pass = 1
+	for pass < ndata {
+		idx = pass - 1
+		i = pass
+		for i < ndata {
+			if (*data)[i].hargaSaham > (*data)[idx].hargaSaham {
+				idx = i
+			}
+			i = i + 1
+		}
+		temp = (*data)[pass-1]
+		(*data)[pass-1] = (*data)[idx]
+		(*data)[idx] = temp
+		pass = pass + 1
+	}
+}
+
+func urutDataDescedingVolume(data *tabsa, ndata int) { //untuk mengurutkan data saham dari besar ke kecil berdasarkan volume
+	var i, idx, pass int
+	var temp int //penyimpanan data sementara
+	pass = 1
+	for pass < ndata {
+		idx = pass - 1
+		i = pass
+		for i < ndata {
+			if (*data)[i].volume > (*data)[idx].volume {
+				idx = i
+			}
+			i = i + 1
+		}
+		temp = (*data)[pass-1]
+		(*data)[pass-1] = (*data)[idx]
+		(*data)[idx] = temp
+		pass = pass + 1
+	}
+}
+
+func main() {
+	inisialisasiDataSaham()
+	var hargaSaham float64
+
+}
