@@ -40,26 +40,29 @@ var jumlahPortofolio int = 0
 var saldo float64 = 10000000 //karena trading saham tanpa resiko nyata, asumsikan kita menyedikan uang virtual sebagai bahan pembelajaran
 
 func inisialisasiDataSaham() {
-	var dataSaham tabsa
-	dataSaham[0] = saham{id: "BBCA", namasaham: "Bank Central Asia", hargaSaham: 9275, volume: 10000, nilaiSaham: 6788889} //Harga Saham dalam 1 lebar saham
-	dataSaham[1] = saham{id: "BBRI", namasaham: "Bank rakyat Indonesia", hargaSaham: 4260}
-	dataSaham[2] = saham{id: "BMRI", namasaham: "Bank Mandiri", hargaSaham: 5275}
-	dataSaham[3] = saham{id: "TLKM", namasaham: "Telkom Indonesia", hargaSaham: 2660}
-	dataSaham[4] = saham{id: "ASII", namasaham: "Astra Indonesia", hargaSaham: 4820}
-	dataSaham[5] = saham{id: "UNVR", namasaham: "Uniliver Indonesia", hargaSaham: 4500}
-	dataSaham[6] = saham{id: "ICBP", namasaham: "Indofood CBP Sukses Makmur", hargaSaham: 10000}
-	dataSaham[7] = saham{id: "ADRO", namasaham: "Adaro Energy Indonesia", hargaSaham: 3000}
-	dataSaham[8] = saham{id: "AKRA", namasaham: "AKR Corpindo", hargaSaham: 1300}
-	dataSaham[9] = saham{id: "ACES", namasaham: "Ace Hardware Indonesia", hargaSaham: 545}
+	daftarSaham[0] = saham{id: "BBCA", namasaham: "Bank Central Asia", hargaSaham: 9275, volume: 10000, nilaiSaham: 6788889} //Harga Saham dalam 1 lebar saham
+	daftarSaham[1] = saham{id: "BBRI", namasaham: "Bank rakyat Indonesia", hargaSaham: 4260, volume: 10000, nilaiSaham: 6788889}
+	daftarSaham[2] = saham{id: "BMRI", namasaham: "Bank Mandiri", hargaSaham: 5275, volume: 10000, nilaiSaham: 6788889}
+	daftarSaham[3] = saham{id: "TLKM", namasaham: "Telkom Indonesia", hargaSaham: 2660, volume: 10000, nilaiSaham: 6788889}
+	daftarSaham[4] = saham{id: "ASII", namasaham: "Astra Indonesia", hargaSaham: 4820, volume: 10000, nilaiSaham: 6788889}
+	daftarSaham[5] = saham{id: "UNVR", namasaham: "Uniliver Indonesia", hargaSaham: 4500, volume: 10000, nilaiSaham: 6788889}
+	daftarSaham[6] = saham{id: "ICBP", namasaham: "Indofood CBP Sukses Makmur", hargaSaham: 10000, volume: 10000, nilaiSaham: 6788889}
+	daftarSaham[7] = saham{id: "ADRO", namasaham: "Adaro Energy Indonesia", hargaSaham: 3000, volume: 10000, nilaiSaham: 6788889}
+	daftarSaham[8] = saham{id: "AKRA", namasaham: "AKR Corpindo", hargaSaham: 1300, volume: 10000, nilaiSaham: 6788889}
+	daftarSaham[9] = saham{id: "ACES", namasaham: "Ace Hardware Indonesia", hargaSaham: 545, volume: 10000, nilaiSaham: 6788889}
 }
 
 func tampilkanDaftarSaham() { // Daftar-daftar saham yang dapat dibeli
 	var data tabsa
+	fmt.Println("-----------------------------------------------------------------------------------")
+	fmt.Printf("| %-5s | %-25s | Rp%-15s | %-15s | %-15s |\n", "KODE", "NAMA", "HARGA SAHAM", "VOLUME", "NILAI SAHAM")
+	fmt.Println("-----------------------------------------------------------------------------------")
 	for i := 0; i < 10; i++ {
-		if data[i].ID != "" {
-			fmt.Printf("| %-5s | %-25s | Rp%-15d |\n", data[i].ID, data[i].NamaSaham, data[i].Harga)
+		if data[i].id != "" {
+			fmt.Printf("| %-5s | %-25s | Rp%-15f | %-15f | %-15f |\n", data[i].id, data[i].namasaham, data[i].hargaSaham, data[i].volume, data[i].nilaiSaham)
 		}
 	}
+	fmt.Println("-----------------------------------------------------------------------------------")
 }
 
 func beli() { //beli: nama saham, kode saham, beli berdasarkan lembar saham(bukan nilai dlm rupiah) dan pastikan saldo masih cukup,
@@ -88,11 +91,11 @@ func simulasiTrading() { //n untuk berapa lama menahan
 	jika dapat 3-5 harga naik sekian dalam %. anggap tiap kenaikkan adalah dalam rentang 1 bulan sehingga masukkan
 	misal 4 jadi kita seperti perkembangan harga saham dalam 4 bulan atau 4 kali naik / turun */
 	var n int
-	fmt.Println("Simulasi pergerakan harga saham selama 1 bulan per langkah, ingin menahan berapa lama: ")
+	fmt.Println("Simulasi pergerakan harga saham sebanyak 1 perbulan, ingin menahan berapa lama: ")
 	fmt.Scan(&n)
 	for i := 1; i <= n; i++ {
 		// random 1–5
-		switch rand.Intn(5) + 1 { // + 1 karena dari nol
+		switch rand.Intn(6) + 1 { // + 1 karena dari nol
 		case 1:
 			// tidak ada perubahan
 		case 2:
@@ -107,6 +110,9 @@ func simulasiTrading() { //n untuk berapa lama menahan
 		case 5:
 			daftarSaham[i].hargaSaham *= 1.05 // naik 5%
 			daftarSaham[i].nilaiSaham *= 1.05
+		case 6:
+			daftarSaham[i].hargaSaham *= 0.97 // turun 3%
+			daftarSaham[i].nilaiSaham *= 0.97
 		}
 	}
 	fmt.Println("Harga telah diperbarui.")
@@ -114,7 +120,7 @@ func simulasiTrading() { //n untuk berapa lama menahan
 
 func urutDataDescedingHarga(data *tabsa, ndata int) { //untuk mengurutkan data saham dari besar ke kecil berdasarkan Harga saham
 	var i, idx, pass int
-	var temp int //penyimpanan data sementara
+	var temp saham //penyimpanan data sementara
 	pass = 1
 	for pass < ndata {
 		idx = pass - 1
@@ -134,7 +140,7 @@ func urutDataDescedingHarga(data *tabsa, ndata int) { //untuk mengurutkan data s
 
 func urutDataDescedingVolume(data *tabsa, ndata int) { //untuk mengurutkan data saham dari besar ke kecil berdasarkan volume
 	var i, idx, pass int
-	var temp int //penyimpanan data sementara
+	var temp saham //penyimpanan data sementara
 	pass = 1
 	for pass < ndata {
 		idx = pass - 1
@@ -152,11 +158,12 @@ func urutDataDescedingVolume(data *tabsa, ndata int) { //untuk mengurutkan data 
 	}
 }
 
-func pilihan(pilih *int) { //pengguna memilih akan melakukan apa
+func pilihan() { //pengguna memilih akan melakukan apa
 	for {
-		fmt.Printf("Pilih hal apa yang akan anda lakukan: \n1. Tampilkan daftar saham. \n2. Tampilkan portofolio anda. \n3.Beli saham. \n4.Jual saham. \n5. Tampilkan statistik keuntungan/kerugian. \n6. Melakukan simulasi saham. \n7. Keluar.")
-		fmt.Scan(pilih)
-		switch *pilih {
+		var pilih int
+		fmt.Printf("Pilih hal apa yang akan anda lakukan: \n1. Tampilkan daftar saham. \n2. Tampilkan portofolio anda. \n3. Beli saham. \n4. Jual saham. \n5. Tampilkan statistik keuntungan/kerugian. \n6. Melakukan simulasi saham. \n7. Keluar.")
+		fmt.Scan(&pilih)
+		switch pilih {
 		case 1: //memanggil fungsi daftar saham
 			tampilkanDaftarSaham()
 		case 2: //fungsi porto
@@ -172,12 +179,12 @@ func pilihan(pilih *int) { //pengguna memilih akan melakukan apa
 		default:
 			return
 		}
+		fmt.Println()
 	}
 }
 
 func main() {
 	inisialisasiDataSaham()
-	var pilih int
-	pilihan(pilih)
+	pilihan()
 
 }
