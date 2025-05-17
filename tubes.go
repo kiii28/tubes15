@@ -24,13 +24,17 @@ type saham struct {
 	id, namasaham                  string
 	volume, hargaSaham, nilaiSaham float64
 }
+type statistik struct {
+	totalKeuntungan, totalKerugian, naikHarga, turunHarga, naikNilai, turunNilai float64
+}
 
 type tabtr [150]transaksi //array transaksi
 type tabpe [15]pengguna   //array pengguna
 type tabsa [10]saham      // array saham
+type tabst [1]statistik
 
 var daftarSaham tabsa
-
+var statstk tabst
 var Transaksi tabtr
 var jumlahTransaksi int = 0
 
@@ -91,9 +95,13 @@ func simulasiTrading() { //n untuk berapa lama menahan
 	jika dapat 3-5 harga naik sekian dalam %. anggap tiap kenaikkan adalah dalam rentang 1 bulan sehingga masukkan
 	misal 4 jadi kita seperti perkembangan harga saham dalam 4 bulan atau 4 kali naik / turun */
 	var n int
+	var hargaSebelum, nilaiSebelum float64
+	var selisihHarga, selisihNilai float64
 	fmt.Println("Simulasi pergerakan harga saham sebanyak 1 perbulan, ingin menahan berapa lama: ")
 	fmt.Scan(&n)
 	for i := 1; i <= n; i++ {
+		hargaSebelum = daftarSaham[i].hargaSaham
+		nilaiSebelum = daftarSaham[i].nilaiSaham
 		// random 1–5
 		switch rand.Intn(6) + 1 { // + 1 karena dari nol
 		case 1:
@@ -114,6 +122,25 @@ func simulasiTrading() { //n untuk berapa lama menahan
 			daftarSaham[i].hargaSaham *= 0.97 // turun 3%
 			daftarSaham[i].nilaiSaham *= 0.97
 		}
+		selisihHarga = daftarSaham[i].hargaSaham - hargaSebelum
+		selisihNilai = daftarSaham[i].nilaiSaham - nilaiSebelum
+
+		if selisihHarga > 0 {
+			statstk[0].totalKeuntungan += selisihHarga
+			statstk[0].naikHarga++
+		} else if selisihHarga < 0 {
+			statstk[0].totalKerugian += -selisihHarga
+			statstk[0].turunHarga++
+		}
+
+		if selisihNilai > 0 {
+			statstk[0].totalKeuntungan += selisihNilai
+			statstk[0].naikNilai++
+		} else if selisihNilai < 0 {
+			statstk[0].totalKerugian += -selisihNilai
+			statstk[0].turunNilai++
+		}
+
 	}
 	fmt.Println("Harga telah diperbarui.")
 }
