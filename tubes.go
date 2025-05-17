@@ -34,6 +34,7 @@ type tabsa [10]saham      // array saham
 type tabst [1]statistik
 
 var daftarSaham tabsa
+var sahamPunya int = 0
 var statstk tabst
 var Transaksi tabtr
 var jumlahTransaksi int = 0
@@ -68,9 +69,91 @@ func tampilkanDaftarSaham() { // Daftar-daftar saham yang dapat dibeli
 	}
 	fmt.Println("-----------------------------------------------------------------------------------")
 }
+func cariKodeSaham(dataSaham tabsa, searchKey string)int {
+	var idx, i int
+	idx = -1
+	i = 0
+    for idx == -1 && i < 10 {
+    	if dataSaham[i].id == searchKey{
+			idx = i
+			
+		}
+            
+    }
+	return idx
+    
+}
+
 
 func beli() { //beli: nama saham, kode saham, beli berdasarkan lembar saham(bukan nilai dlm rupiah) dan pastikan saldo masih cukup,
-
+	var pilih string
+	var cari int
+	fmt.Println("Masukkan kode sama yang ingin dibeli, 'buka' untuk melihat daftar: ")
+	fmt.Scan(&pilih)
+	switch pilih {
+	case "buka":
+		tampilkanDaftarSaham()
+	case "BBCA":
+		portofolio[sahamPunya].SahamDimiliki = "BBCA"
+		cari = cariKodeSaham(daftarSaham, "BBCA")
+		portofolio[0].nilaiSahamDimiliki += daftarSaham[cari].hargaSaham
+		sahamPunya += 1	
+		fmt.Println("Anda sudah membeli saham Bank BCA")
+	case "BBRI":
+		portofolio[sahamPunya].SahamDimiliki = "BBCA"
+		cari = cariKodeSaham(daftarSaham, "BBCA")
+		portofolio[0].nilaiSahamDimiliki += daftarSaham[cari].hargaSaham
+		sahamPunya += 1	
+		fmt.Println("Anda sudah membeli saham Bank BCA")
+	case "BBCA":
+		portofolio[sahamPunya].SahamDimiliki = "BBCA"
+		cari = cariKodeSaham(daftarSaham, "BBCA")
+		portofolio[0].nilaiSahamDimiliki += daftarSaham[cari].hargaSaham
+		sahamPunya += 1	
+		fmt.Println("Anda sudah membeli saham Bank BCA")
+	case "BBCA":
+		portofolio[sahamPunya].SahamDimiliki = "BBCA"
+		cari = cariKodeSaham(daftarSaham, "BBCA")
+		portofolio[0].nilaiSahamDimiliki += daftarSaham[cari].hargaSaham
+		sahamPunya += 1	
+		fmt.Println("Anda sudah membeli saham Bank BCA")
+	case "BBCA":
+		portofolio[sahamPunya].SahamDimiliki = "BBCA"
+		cari = cariKodeSaham(daftarSaham, "BBCA")
+		portofolio[0].nilaiSahamDimiliki += daftarSaham[cari].hargaSaham
+		sahamPunya += 1	
+		fmt.Println("Anda sudah membeli saham Bank BCA")
+	case "BBCA":
+		portofolio[sahamPunya].SahamDimiliki = "BBCA"
+		cari = cariKodeSaham(daftarSaham, "BBCA")
+		portofolio[0].nilaiSahamDimiliki += daftarSaham[cari].hargaSaham
+		sahamPunya += 1	
+		fmt.Println("Anda sudah membeli saham Bank BCA")
+	case "BBCA":
+		portofolio[sahamPunya].SahamDimiliki = "BBCA"
+		cari = cariKodeSaham(daftarSaham, "BBCA")
+		portofolio[0].nilaiSahamDimiliki += daftarSaham[cari].hargaSaham
+		sahamPunya += 1	
+		fmt.Println("Anda sudah membeli saham Bank BCA")
+	case "BBCA":
+		portofolio[sahamPunya].SahamDimiliki = "BBCA"
+		cari = cariKodeSaham(daftarSaham, "BBCA")
+		portofolio[0].nilaiSahamDimiliki += daftarSaham[cari].hargaSaham
+		sahamPunya += 1	
+		fmt.Println("Anda sudah membeli saham Bank BCA")
+	case "BBCA":
+		portofolio[sahamPunya].SahamDimiliki = "BBCA"
+		cari = cariKodeSaham(daftarSaham, "BBCA")
+		portofolio[0].nilaiSahamDimiliki += daftarSaham[cari].hargaSaham
+		sahamPunya += 1	
+		fmt.Println("Anda sudah membeli saham Bank BCA")
+	case "BBCA":
+		portofolio[sahamPunya].SahamDimiliki = "BBCA"
+		cari = cariKodeSaham(daftarSaham, "BBCA")
+		portofolio[0].nilaiSahamDimiliki += daftarSaham[cari].hargaSaham
+		sahamPunya += 1	
+		fmt.Println("Anda sudah membeli saham Bank BCA")
+	}
 }
 func jual() {
 
@@ -196,7 +279,7 @@ func pilihan() { //pengguna memilih akan melakukan apa
 		case 2: //fungsi porto
 
 		case 3: //
-
+			beli()
 		case 4:
 
 		case 5:
