@@ -411,6 +411,7 @@ func hapusSahamPengguna(index int) {
 
 }
 
+//Untuk yang function jual masih dalam proses pengerjaan//
 func jual() {
 	var saham string
 	var jumlah, cariPe, cariSa int
@@ -433,6 +434,8 @@ func jual() {
 		}
 	}
 }
+//Untuk yang function jual masih dalam proses pengerjaan//
+
 func portofolioPengguna() { //input nama pengguna lalu buat var saham dimiliki, nilai saham, keuntungan, kerugian
 	fmt.Println("--------------------------------------------------------------------------------------------------------------")
 	fmt.Printf("| %-20s | %-10s | %-20s | %-25s |\n", "NAMA", "KODE SAHAM", "NILAI SAHAM DIMILIKI", "TOTAL NILAI SAHAM DIMILIKI")
@@ -529,6 +532,7 @@ func simulasiTrading() { //n untuk berapa lama menahan
 	fmt.Println("Harga telah diperbarui.")
 }
 
+//function urutDataDescedingHarga masih dalam tahap pengerjaan//
 func urutDataDescedingHarga(data *tabsa, ndata int) { //untuk mengurutkan data saham dari besar ke kecil berdasarkan Harga saham
 	var i, idx, pass int
 	var temp saham //penyimpanan data sementara
@@ -548,7 +552,9 @@ func urutDataDescedingHarga(data *tabsa, ndata int) { //untuk mengurutkan data s
 		pass = pass + 1
 	}
 }
+//function urutDataDescedingHarga masih dalam tahap pengerjaan//
 
+//function urutDataDescedingVolume masih dalam tahap pengerjaan//
 func urutDataDescedingVolume(data *tabsa, ndata int) { //untuk mengurutkan data saham dari besar ke kecil berdasarkan volume
 	var i, idx, pass int
 	var temp saham //penyimpanan data sementara
@@ -568,6 +574,7 @@ func urutDataDescedingVolume(data *tabsa, ndata int) { //untuk mengurutkan data 
 		pass = pass + 1
 	}
 }
+//function urutDataDescedingVolume masih dalam tahap pengerjaan//
 
 func pilihan() { //pengguna memilih akan melakukan apa
 	for {
