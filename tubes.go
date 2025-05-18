@@ -58,15 +58,15 @@ func inisialisasiDataSaham() {
 }
 
 func tampilkanDaftarSaham() { // Daftar-daftar saham yang dapat dibeli
-	fmt.Println("-----------------------------------------------------------------------------------")
-	fmt.Printf("| %-5s | %-25s | Rp%-15s | %-15s | %-15s |\n", "KODE", "NAMA", "HARGA SAHAM", "VOLUME", "NILAI SAHAM")
-	fmt.Println("-----------------------------------------------------------------------------------")
+	fmt.Println("--------------------------------------------------------------------------------------------------")
+	fmt.Printf("| %-5s | %-27s | Rp %-15s | %-15s | %-18s |\n", "KODE", "NAMA", "HARGA SAHAM", "VOLUME", "NILAI SAHAM")
+	fmt.Println("--------------------------------------------------------------------------------------------------")
 	for i := 0; i < 10; i++ {
 		if daftarSaham[i].id != "" {
-			fmt.Printf("| %-5s | %-25s | Rp%-15.2f | %-15.2f | %-15.2f |\n", daftarSaham[i].id, daftarSaham[i].namasaham, daftarSaham[i].hargaSaham, daftarSaham[i].volume, daftarSaham[i].nilaiSaham)
+			fmt.Printf("| %-5s | %-27s | Rp %-15.2f | %-15.2f | %-18.2f |\n", daftarSaham[i].id, daftarSaham[i].namasaham, daftarSaham[i].hargaSaham, daftarSaham[i].volume, daftarSaham[i].nilaiSaham)
 		}
 	}
-	fmt.Println("-----------------------------------------------------------------------------------")
+	fmt.Println("---------------------------------------------------------------------------------------------------")
 }
 func cariKodeSaham(dataSaham tabsa, searchKey string) int { // funsi cari di array saham
 	var idx, i int
@@ -75,9 +75,9 @@ func cariKodeSaham(dataSaham tabsa, searchKey string) int { // funsi cari di arr
 	for idx == -1 && i < 10 {
 		if dataSaham[i].id == searchKey {
 			idx = i
-			i = i + 1
-		}
 
+		}
+		i = i + 1
 	}
 	return idx
 
@@ -89,9 +89,9 @@ func cariKodeSahamPengguna(dataSaham tabpe, searchKey string) int { // funsi car
 	for idx == -1 && i < 10 {
 		if dataSaham[i].SahamDimiliki == searchKey {
 			idx = i
-			i = i + 1
-		}
 
+		}
+		i = i + 1
 	}
 	return idx
 
@@ -405,6 +405,7 @@ func hapusSahamPengguna(index int) {
 	for i < 10 {
 		portofolio[i].nilaiSahamDimiliki = portofolio[i+1].nilaiSahamDimiliki
 		portofolio[i].SahamDimiliki = portofolio[i+1].SahamDimiliki
+		i++
 	}
 	portofolio[index].totalNilaiSahamDimiliki = portofolio[index].totalNilaiSahamDimiliki - portofolio[index].nilaiSahamDimiliki
 
@@ -435,7 +436,7 @@ func jual() {
 func portofolioPengguna() { //input nama pengguna lalu buat var saham dimiliki, nilai saham, keuntungan, kerugian
 	fmt.Println("--------------------------------------------------------------------------------------------------------------")
 	fmt.Printf("| %-20s | %-10s | %-20s | %-25s |\n", "NAMA", "KODE SAHAM", "NILAI SAHAM DIMILIKI", "TOTAL NILAI SAHAM DIMILIKI")
-	fmt.Println("-------------------------------------------------------------------------------------------------")
+	fmt.Println("--------------------------------------------------------------------------------------------------------------")
 	for i := 0; i < sahamPunya; i++ {
 		if portofolio[i].SahamDimiliki != "" {
 			fmt.Printf("| %-20s | %-10s | Rp %-18.2f | Rp %-23.2f |\n", portofolio[i].nama, portofolio[i].SahamDimiliki, portofolio[i].nilaiSahamDimiliki, portofolio[i].totalNilaiSahamDimiliki)
@@ -445,12 +446,12 @@ func portofolioPengguna() { //input nama pengguna lalu buat var saham dimiliki, 
 
 }
 func tampilkanStatistikUntungRugi() {
-	fmt.Println("\n-------------------------STATISTIK KEUNTUNGAN / KERUGIAAN -------------------------------------")
+	fmt.Println("\n-------------------------STATISTIK KEUNTUNGAN / KERUGIAAN --------------------------------------------------")
 	fmt.Printf("Total Keuntungan      : Rp %.2f\n", statstk[0].totalKeuntungan)
 	fmt.Printf("Total Kerugian        : Rp %.2f\n", statstk[0].totalKerugian)
 	fmt.Printf("Jumlah Harga Naik     : %.0f kali\n", statstk[0].naikHarga)
 	fmt.Printf("Jumlah Harga Turun    : %.0f kali\n", statstk[0].turunHarga)
-	fmt.Println("--------------------------------------------------------------------------------------------------")
+	fmt.Println("--------------------------------------------------------------------------------------------------------------")
 
 }
 
