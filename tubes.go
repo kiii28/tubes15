@@ -16,8 +16,8 @@ type pengguna struct {
 }
 
 type transaksi struct {
-	Pembelian, penjualan, lot, lembarSaham int // Lot adlah minimal pembelian saham, 1 Lot = 100 Lembar saham
-	namaTransaksi, idsaham                 string
+	Pembelian, penjualan, lembarSaham int
+	namaTransaksi, idsaham            string
 }
 
 type saham struct {
@@ -25,7 +25,7 @@ type saham struct {
 	volume, hargaSaham, nilaiSaham float64
 }
 type statistik struct {
-	totalKeuntungan, totalKerugian, naikHarga, turunHarga, naikNilai, turunNilai float64
+	totalKeuntungan, totalKerugian, naikHarga, turunHarga float64
 }
 
 type tabtr [150]transaksi //array transaksi
@@ -107,7 +107,7 @@ func beli() { //beli: nama saham, kode saham, beli berdasarkan lembar saham(buka
 	switch pilih {
 	case "buka":
 		tampilkanDaftarSaham()
-	case "BBCA": //buat kondisi kalau saham yang dibeli sama dan berapa julah yang dibeli
+	case "BBCA": //buat kondisi kalau saham yang dibeli sama dan berapa jumlah yang dibeli
 		fmt.Println("Anda ingin membeli berapa lembar saham: ")
 		fmt.Scan(&banyak)
 		cariPe = cariKodeSahamPengguna(portofolio, "BBCA")
@@ -400,71 +400,128 @@ func beli() { //beli: nama saham, kode saham, beli berdasarkan lembar saham(buka
 		}
 	}
 }
-
-func jual() {
+func hapusSahamPengguna(index int) {
+	var i int = index
+	for i < 10 {
+		portofolio[i].nilaiSahamDimiliki = portofolio[i+1].nilaiSahamDimiliki
+		portofolio[i].SahamDimiliki = portofolio[i+1].SahamDimiliki
+	}
+	portofolio[index].totalNilaiSahamDimiliki = portofolio[index].totalNilaiSahamDimiliki - portofolio[index].nilaiSahamDimiliki
 
 }
-func portofolioPengguna(nama, sahamDimiliki, nilaiSHDimiliki, untungRugi tabpe) { //input nama pengguna lalu buat var saham dimiliki, nilai saham, keuntungan, kerugian
+
+func jual() {
+	var saham string
+	var jumlah, cariPe, cariSa int
+	var cariNilai float64
+	fmt.Println("Ingin jual saham apa: ")
+	fmt.Scan(&saham)
+	fmt.Println("Berapa banyak jumlah saham yang ingin dijual: ")
+	fmt.Scan(&jumlah)
+	cariPe = cariKodeSahamPengguna(portofolio, saham)
+	cariSa = cariKodeSaham(daftarSaham, saham)
+	if cariPe != -1 {
+		cariNilai = daftarSaham[cariSa].nilaiSaham
+		if portofolio[cariPe].nilaiSahamDimiliki-cariNilai*float64(jumlah) > 0 {
+			portofolio[cariPe].nilaiSahamDimiliki = portofolio[cariPe].nilaiSahamDimiliki - cariNilai*float64(jumlah)
+			portofolio[cariPe].totalNilaiSahamDimiliki = portofolio[cariPe].totalNilaiSahamDimiliki - cariNilai*float64(jumlah)
+			saldo = saldo + cariNilai*float64(jumlah)
+		} else {
+			saldo = saldo + cariNilai*float64(jumlah)
+			hapusSahamPengguna(cariPe)
+		}
+	}
+}
+func portofolioPengguna() { //input nama pengguna lalu buat var saham dimiliki, nilai saham, keuntungan, kerugian
+	fmt.Println("--------------------------------------------------------------------------------------------------------------")
+	fmt.Printf("| %-20s | %-10s | %-20s | %-25s |\n", "NAMA", "KODE SAHAM", "NILAI SAHAM DIMILIKI", "TOTAL NILAI SAHAM DIMILIKI")
+	fmt.Println("-------------------------------------------------------------------------------------------------")
+	for i := 0; i < sahamPunya; i++ {
+		if portofolio[i].SahamDimiliki != "" {
+			fmt.Printf("| %-20s | %-10s | Rp %-18.2f | Rp %-23.2f |\n", portofolio[i].nama, portofolio[i].SahamDimiliki, portofolio[i].nilaiSahamDimiliki, portofolio[i].totalNilaiSahamDimiliki)
+		}
+	}
+	fmt.Println("--------------------------------------------------------------------------------------------------------------")
 
 }
 func tampilkanStatistikUntungRugi() {
+	fmt.Println("\n-------------------------STATISTIK KEUNTUNGAN / KERUGIAAN -------------------------------------")
+	fmt.Printf("Total Keuntungan      : Rp %.2f\n", statstk[0].totalKeuntungan)
+	fmt.Printf("Total Kerugian        : Rp %.2f\n", statstk[0].totalKerugian)
+	fmt.Printf("Jumlah Harga Naik     : %.0f kali\n", statstk[0].naikHarga)
+	fmt.Printf("Jumlah Harga Turun    : %.0f kali\n", statstk[0].turunHarga)
+	fmt.Println("--------------------------------------------------------------------------------------------------")
 
 }
-func hitungUntungRugi() {
-	//kurang lebih saldo yang "sudah dibelikan saham" akan dihitung,
-	//pertambahan nilai atau pengurangan nilai dari saham setelah melakukan simulasi trading
 
-}
 func simulasiTrading() { //n untuk berapa lama menahan
 	/* idenya adalah asumsikan bahwa naik turun harga saham memiliki kemungkinan untung 3 : 1 rugi
 	anggap kita mempunya angka random 1-5 dengan jika dapat 1 tidak ada perubahan jika dapat 2 Harga turun sekian dalam %
 	jika dapat 3-5 harga naik sekian dalam %. anggap tiap kenaikkan adalah dalam rentang 1 bulan sehingga masukkan
 	misal 4 jadi kita seperti perkembangan harga saham dalam 4 bulan atau 4 kali naik / turun */
-	var n int
+	var n, random int
 	var hargaSebelum, nilaiSebelum float64
 	var selisihHarga, selisihNilai float64
 	fmt.Println("Simulasi pergerakan harga saham sebanyak 1 perbulan, ingin menahan berapa lama: ")
 	fmt.Scan(&n)
 	for i := 1; i <= n; i++ {
-		hargaSebelum = daftarSaham[i].hargaSaham
-		nilaiSebelum = daftarSaham[i].nilaiSaham
-		// random 1–5
-		switch rand.Intn(6) + 1 { // + 1 karena dari nol
-		case 1:
-			// tidak ada perubahan
-		case 2:
-			daftarSaham[i].hargaSaham *= 0.98 // turun 2%
-			daftarSaham[i].nilaiSaham *= 0.98
-		case 3:
-			daftarSaham[i].hargaSaham *= 1.03 // naik 3%
-			daftarSaham[i].nilaiSaham *= 1.03
-		case 4:
-			daftarSaham[i].hargaSaham *= 1.04 // naik 4%
-			daftarSaham[i].nilaiSaham *= 1.04
-		case 5:
-			daftarSaham[i].hargaSaham *= 1.05 // naik 5%
-			daftarSaham[i].nilaiSaham *= 1.05
-		case 6:
-			daftarSaham[i].hargaSaham *= 0.97 // turun 3%
-			daftarSaham[i].nilaiSaham *= 0.97
-		}
-		selisihHarga = daftarSaham[i].hargaSaham - hargaSebelum
-		selisihNilai = daftarSaham[i].nilaiSaham - nilaiSebelum
+		random = rand.Intn(6) + 1
+		for j := 0; j < 10; j++ {
+			if j <= sahamPunya {
+				hargaSebelum = portofolio[j].nilaiSahamDimiliki
+				nilaiSebelum = portofolio[j].totalNilaiSahamDimiliki
+			}
+			switch random {
+			case 1:
+				// tidak ada perubahan
+			case 2:
+				daftarSaham[j].hargaSaham *= 0.98 // turun 2%
+				daftarSaham[j].nilaiSaham *= 0.98
+				if j <= sahamPunya {
+					portofolio[j].nilaiSahamDimiliki *= 0.98
+					portofolio[0].totalNilaiSahamDimiliki *= 0.98
+				}
+			case 3:
+				daftarSaham[j].hargaSaham *= 1.03 // naik 3%
+				daftarSaham[j].nilaiSaham *= 1.03
+				if j <= sahamPunya {
+					portofolio[j].nilaiSahamDimiliki *= 1.03
+					portofolio[0].totalNilaiSahamDimiliki *= 1.03
+				}
+			case 4:
+				daftarSaham[j].hargaSaham *= 1.04 // naik 4%
+				daftarSaham[j].nilaiSaham *= 1.04
+				if j <= sahamPunya {
+					portofolio[j].nilaiSahamDimiliki *= 1.04
+					portofolio[0].totalNilaiSahamDimiliki *= 1.04
+				}
+			case 5:
+				daftarSaham[j].hargaSaham *= 1.05 // naik 5%
+				daftarSaham[j].nilaiSaham *= 1.05
+				if j <= sahamPunya {
+					portofolio[j].nilaiSahamDimiliki *= 1.05
+					portofolio[0].totalNilaiSahamDimiliki *= 1.05
+				}
+			case 6:
+				daftarSaham[j].hargaSaham *= 0.97 // turun 3%
+				daftarSaham[j].nilaiSaham *= 0.97
+				if j <= sahamPunya {
+					portofolio[j].nilaiSahamDimiliki *= 0.97
+					portofolio[0].totalNilaiSahamDimiliki *= 0.97
+				}
+			}
+			if j <= sahamPunya {
+				selisihHarga = portofolio[j].nilaiSahamDimiliki - hargaSebelum
+				selisihNilai = portofolio[0].totalNilaiSahamDimiliki - nilaiSebelum
 
-		if selisihHarga > 0 {
-			statstk[0].totalKeuntungan += selisihHarga
-			statstk[0].naikHarga++
-		} else if selisihHarga < 0 {
-			statstk[0].totalKerugian += -selisihHarga
-			statstk[0].turunHarga++
-		}
-
-		if selisihNilai > 0 {
-			statstk[0].totalKeuntungan += selisihNilai
-			statstk[0].naikNilai++
-		} else if selisihNilai < 0 {
-			statstk[0].totalKerugian += -selisihNilai
-			statstk[0].turunNilai++
+				if selisihHarga > 0 {
+					statstk[0].totalKeuntungan += selisihNilai
+					statstk[0].naikHarga++
+				} else if selisihHarga < 0 {
+					statstk[0].totalKerugian += -selisihNilai
+					statstk[0].turunHarga++
+				}
+			}
 		}
 
 	}
@@ -520,13 +577,13 @@ func pilihan() { //pengguna memilih akan melakukan apa
 		case 1: //memanggil fungsi daftar saham
 			tampilkanDaftarSaham()
 		case 2: //fungsi porto
-
+			portofolioPengguna()
 		case 3: //
 			beli()
 		case 4:
-
+			jual()
 		case 5:
-
+			tampilkanStatistikUntungRugi()
 		case 6:
 			simulasiTrading()
 		default:
