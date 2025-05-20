@@ -105,299 +105,42 @@ func beli() { //beli: nama saham, kode saham, beli berdasarkan lembar saham(buka
 	fmt.Println("Masukkan kode sama yang ingin dibeli, 'buka' untuk melihat daftar: ")
 	fmt.Scan(&pilih)
 	switch pilih {
-	case "buka":
+	case "buka": //pilihan ini akan membuka daftar saham
 		tampilkanDaftarSaham()
-	case "BBCA": //buat kondisi kalau saham yang dibeli sama dan berapa jumlah yang dibeli
+	default: //pilihan ini akan melakukan transaksi pembelian
 		fmt.Println("Anda ingin membeli berapa lembar saham: ")
-		fmt.Scan(&banyak)
-		cariPe = cariKodeSahamPengguna(portofolio, "BBCA")
-		if cariPe == -1 { // -1 berarti pengguna belum memiliki saham tersebut
-			portofolio[sahamPunya].SahamDimiliki = "BBCA"
-			cariSa = cariKodeSaham(daftarSaham, "BBCA")
-			if (float64(banyak) * daftarSaham[cariSa].hargaSaham) <= saldo {
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)    // total semua saham yang dimiliki
-				portofolio[sahamPunya].nilaiSahamDimiliki = daftarSaham[cariSa].hargaSaham * float64(banyak) //hanya mencatat khusus
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah membeli saham Bank BCA")
-				fmt.Printf("Saldo anda sekarang: Rp %.2f", saldo)
-				sahamPunya += 1
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
+		fmt.Scan(&banyak)                          // banyak lembar saham yang akan di beli
+		cariSa = cariKodeSaham(daftarSaham, pilih) //akan mencari kode saham di daftar saham
+		if cariSa != -1 {                          //ketika kode saham ditemukan
+			cariPe = cariKodeSahamPengguna(portofolio, pilih) // mencari kode saham di portofolio apakah pengguna sudah memiliki saham tersebut atau tidak
+
+			if cariPe == -1 { // -1 berarti pengguna belum memiliki saham tersebut
+				portofolio[sahamPunya].SahamDimiliki = pilih                     //menambahkan saham dimiliki pada portofolio
+				if (float64(banyak) * daftarSaham[cariSa].hargaSaham) <= saldo { //jika pembelian masih di bawah atau sama dengan saldo
+					portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)    // total semua saham yang dimiliki
+					portofolio[sahamPunya].nilaiSahamDimiliki = daftarSaham[cariSa].hargaSaham * float64(banyak) //hanya mencatat khusus
+					saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)                               //update sisa saldo
+					fmt.Printf("Anda sudah membeli saham  %s \n", pilih)
+					fmt.Printf("Saldo anda sekarang: Rp %.2f \n", saldo)
+					sahamPunya += 1 // kepemilikan jenis saham bertambah 1
+				} else {
+					fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
+				}
+			} else { // pengguna sudah memiliki saham tersebut berarti hanya menambah nilai saham
+				if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo { //jika saldo masih cukup
+					portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak) // total semua saham yang dimiliki
+					portofolio[cariPe].nilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak) // hanya mencatat khusus
+					saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
+					fmt.Printf("Anda sudah memperbarui jumlah saham %s \n", pilih)
+					fmt.Printf("Saldo anda sekarang: Rp %.2f", saldo)
+				} else {
+					fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
+				}
 			}
-		} else { // pengguna sudah memiliki saham tersebut
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				cariSa = cariKodeSaham(daftarSaham, "BBCA")
-				cariPe = cariKodeSahamPengguna(portofolio, "BBCA")
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				portofolio[cariPe].nilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah memperbarui jumlah saham Bank BCA")
-				fmt.Printf("Saldo anda sekarang: Rp %.2f", saldo)
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
+		} else { // jika kode saham yang diinputkan ternyata tidak ada
+			fmt.Println("Kode saham yang Anda cari tidak ada!!")
 		}
-	case "BBRI":
-		fmt.Println("Anda ingin membeli berapa lembar saham: ")
-		fmt.Scan(&banyak)
-		cariPe = cariKodeSahamPengguna(portofolio, "BBRI")
-		cariSa = cariKodeSaham(daftarSaham, "BBRI")
-		if cariPe == -1 { // -1 berarti pengguna belum memiliki saham tersebut
-			portofolio[sahamPunya].SahamDimiliki = "BBRI"
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)    // total semua saham yang dimiliki
-				portofolio[sahamPunya].nilaiSahamDimiliki = daftarSaham[cariSa].hargaSaham * float64(banyak) //hanya mencatat khusus
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah membeli saham Bank BRI")
-				sahamPunya += 1
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
-		} else { // pengguna sudah memiliki saham tersebut
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				cariSa = cariKodeSaham(daftarSaham, "BBRI")
-				cariPe = cariKodeSahamPengguna(portofolio, "BBRI")
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				portofolio[cariPe].nilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah memperbarui jumlah saham Bank BRI")
-				fmt.Printf("Saldo anda sekarang: Rp %.2f", saldo)
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
-		}
-	case "BMRI":
-		fmt.Println("Anda ingin membeli berapa lembar saham: ")
-		fmt.Scan(&banyak)
-		cariPe = cariKodeSahamPengguna(portofolio, "BMRI")
-		cariSa = cariKodeSaham(daftarSaham, "BMRI")
-		if cariPe == -1 { // -1 berarti pengguna belum memiliki saham tersebut
-			portofolio[sahamPunya].SahamDimiliki = "BMRI"
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)    // total semua saham yang dimiliki
-				portofolio[sahamPunya].nilaiSahamDimiliki = daftarSaham[cariSa].hargaSaham * float64(banyak) //hanya mencatat khusus
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah membeli saham Bank Mandiri")
-				sahamPunya += 1
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
-		} else { // pengguna sudah memiliki saham tersebut
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				cariSa = cariKodeSaham(daftarSaham, "BMRI")
-				cariPe = cariKodeSahamPengguna(portofolio, "BMRI")
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				portofolio[cariPe].nilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah memperbarui jumlah saham Bank Mandiri")
-				fmt.Printf("Saldo anda sekarang: Rp %.2f", saldo)
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
-		}
-	case "TLKM":
-		fmt.Println("Anda ingin membeli berapa lembar saham: ")
-		fmt.Scan(&banyak)
-		cariPe = cariKodeSahamPengguna(portofolio, "TLKM")
-		cariSa = cariKodeSaham(daftarSaham, "TLKM")
-		if cariPe == -1 { // -1 berarti pengguna belum memiliki saham tersebut
-			portofolio[sahamPunya].SahamDimiliki = "TLKM"
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)    // total semua saham yang dimiliki
-				portofolio[sahamPunya].nilaiSahamDimiliki = daftarSaham[cariSa].hargaSaham * float64(banyak) //hanya mencatat khusus
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah membeli saham Telkom Indonesia")
-				sahamPunya += 1
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
-		} else { // pengguna sudah memiliki saham tersebut
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				cariSa = cariKodeSaham(daftarSaham, "TLKM")
-				cariPe = cariKodeSahamPengguna(portofolio, "TLKM")
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				portofolio[cariPe].nilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah memperbarui jumlah saham Telkom Indonesia")
-				fmt.Printf("Saldo anda sekarang: Rp %.2f", saldo)
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
-		}
-	case "ASII":
-		fmt.Println("Anda ingin membeli berapa lembar saham: ")
-		fmt.Scan(&banyak)
-		cariPe = cariKodeSahamPengguna(portofolio, "ASII")
-		cariSa = cariKodeSaham(daftarSaham, "ASII")
-		if cariPe == -1 { // -1 berarti pengguna belum memiliki saham tersebut
-			portofolio[sahamPunya].SahamDimiliki = "ASII"
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)    // total semua saham yang dimiliki
-				portofolio[sahamPunya].nilaiSahamDimiliki = daftarSaham[cariSa].hargaSaham * float64(banyak) //hanya mencatat khusus
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah membeli saham Astra Indonesia")
-				sahamPunya += 1
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
-		} else { // pengguna sudah memiliki saham tersebut
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				cariSa = cariKodeSaham(daftarSaham, "ASII")
-				cariPe = cariKodeSahamPengguna(portofolio, "ASII")
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				portofolio[cariPe].nilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah memperbarui jumlah saham Astra Indonesia")
-				fmt.Printf("Saldo anda sekarang: Rp %.2f", saldo)
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
-		}
-	case "UNVR":
-		fmt.Println("Anda ingin membeli berapa lembar saham: ")
-		fmt.Scan(&banyak)
-		cariPe = cariKodeSahamPengguna(portofolio, "UNVR")
-		cariSa = cariKodeSaham(daftarSaham, "UNVR")
-		if cariPe == -1 { // -1 berarti pengguna belum memiliki saham tersebut
-			portofolio[sahamPunya].SahamDimiliki = "UNVR"
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)    // total semua saham yang dimiliki
-				portofolio[sahamPunya].nilaiSahamDimiliki = daftarSaham[cariSa].hargaSaham * float64(banyak) //hanya mencatat khusus
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah membeli saham Uniliver Indonesia")
-				sahamPunya += 1
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
-		} else { // pengguna sudah memiliki saham tersebut
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				cariSa = cariKodeSaham(daftarSaham, "UNVR")
-				cariPe = cariKodeSahamPengguna(portofolio, "UNVR")
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				portofolio[cariPe].nilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah memperbarui jumlah saham Uniliver Indonesia")
-				fmt.Printf("Saldo anda sekarang: Rp %.2f", saldo)
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
-		}
-	case "ICBP":
-		fmt.Println("Anda ingin membeli berapa lembar saham: ")
-		fmt.Scan(&banyak)
-		cariPe = cariKodeSahamPengguna(portofolio, "ICBP")
-		cariSa = cariKodeSaham(daftarSaham, "ICBP")
-		if cariPe == -1 { // -1 berarti pengguna belum memiliki saham tersebut
-			portofolio[sahamPunya].SahamDimiliki = "ICBP"
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)    // total semua saham yang dimiliki
-				portofolio[sahamPunya].nilaiSahamDimiliki = daftarSaham[cariSa].hargaSaham * float64(banyak) //hanya mencatat khusus
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah membeli saham Indofood CBP Sukses Makmur")
-				sahamPunya += 1
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
-		} else { // pengguna sudah memiliki saham tersebut
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				cariSa = cariKodeSaham(daftarSaham, "ICBP")
-				cariPe = cariKodeSahamPengguna(portofolio, "ICBP")
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				portofolio[cariPe].nilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah memperbarui jumlah saham Indofood CBP Sukses Makmur")
-				fmt.Printf("Saldo anda sekarang: Rp %.2f", saldo)
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
-		}
-	case "ADRO":
-		fmt.Println("Anda ingin membeli berapa lembar saham: ")
-		fmt.Scan(&banyak)
-		cariPe = cariKodeSahamPengguna(portofolio, "ADRO")
-		cariSa = cariKodeSaham(daftarSaham, "ADRO")
-		if cariPe == -1 { // -1 berarti pengguna belum memiliki saham tersebut
-			portofolio[sahamPunya].SahamDimiliki = "ADRO"
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)    // total semua saham yang dimiliki
-				portofolio[sahamPunya].nilaiSahamDimiliki = daftarSaham[cariSa].hargaSaham * float64(banyak) //hanya mencatat khusus
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah membeli saham Adaro Energy Indonesia")
-				sahamPunya += 1
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
-		} else { // pengguna sudah memiliki saham tersebut
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				cariSa = cariKodeSaham(daftarSaham, "ADRO")
-				cariPe = cariKodeSahamPengguna(portofolio, "ADRO")
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				portofolio[cariPe].nilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah memperbarui jumlah saham Adaro Energy Indonesia")
-				fmt.Printf("Saldo anda sekarang: Rp %.2f", saldo)
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
-		}
-	case "AKRA":
-		fmt.Println("Anda ingin membeli berapa lembar saham: ")
-		fmt.Scan(&banyak)
-		cariPe = cariKodeSahamPengguna(portofolio, "AKRA")
-		cariSa = cariKodeSaham(daftarSaham, "AKRA")
-		if cariPe == -1 { // -1 berarti pengguna belum memiliki saham tersebut
-			portofolio[sahamPunya].SahamDimiliki = "AKRA"
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)    // total semua saham yang dimiliki
-				portofolio[sahamPunya].nilaiSahamDimiliki = daftarSaham[cariSa].hargaSaham * float64(banyak) //hanya mencatat khusus
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah membeli saham AKR Corpindo")
-				sahamPunya += 1
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
-		} else { // pengguna sudah memiliki saham tersebut
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				cariSa = cariKodeSaham(daftarSaham, "AKRA")
-				cariPe = cariKodeSahamPengguna(portofolio, "AKRA")
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				portofolio[cariPe].nilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah memperbarui jumlah saham AKR Corpindo")
-				fmt.Printf("Saldo anda sekarang: Rp %.2f", saldo)
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
-		}
-	case "ACES":
-		fmt.Println("Anda ingin membeli berapa lembar saham: ")
-		fmt.Scan(&banyak)
-		cariPe = cariKodeSahamPengguna(portofolio, "ACES")
-		cariSa = cariKodeSaham(daftarSaham, "ACES")
-		if cariPe == -1 { // -1 berarti pengguna belum memiliki saham tersebut
-			portofolio[sahamPunya].SahamDimiliki = "ACES"
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)    // total semua saham yang dimiliki
-				portofolio[sahamPunya].nilaiSahamDimiliki = daftarSaham[cariSa].hargaSaham * float64(banyak) //hanya mencatat khusus
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah membeli saham ACE Hardware Indonesia")
-				sahamPunya += 1
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
-		} else { // pengguna sudah memiliki saham tersebut
-			if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo {
-				cariSa = cariKodeSaham(daftarSaham, "ACES")
-				cariPe = cariKodeSahamPengguna(portofolio, "ACES")
-				portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				portofolio[cariPe].nilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)
-				saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
-				fmt.Println("Anda sudah memperbarui jumlah saham ACE Harsware Indonesia")
-				fmt.Printf("Saldo anda sekarang: Rp %.2f", saldo)
-			} else {
-				fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
-			}
-		}
+
 	}
 }
 func hapusSahamPengguna(index int) {
@@ -411,7 +154,7 @@ func hapusSahamPengguna(index int) {
 
 }
 
-//Untuk yang function jual masih dalam proses pengerjaan//
+// Untuk yang function jual masih dalam proses pengerjaan//
 func jual() {
 	var saham string
 	var jumlah, cariPe, cariSa int
@@ -434,6 +177,7 @@ func jual() {
 		}
 	}
 }
+
 //Untuk yang function jual masih dalam proses pengerjaan//
 
 func portofolioPengguna() { //input nama pengguna lalu buat var saham dimiliki, nilai saham, keuntungan, kerugian
@@ -532,7 +276,7 @@ func simulasiTrading() { //n untuk berapa lama menahan
 	fmt.Println("Harga telah diperbarui.")
 }
 
-//function urutDataDescedingHarga masih dalam tahap pengerjaan//
+// function urutDataDescedingHarga masih dalam tahap pengerjaan//
 func urutDataDescedingHarga(data *tabsa, ndata int) { //untuk mengurutkan data saham dari besar ke kecil berdasarkan Harga saham
 	var i, idx, pass int
 	var temp saham //penyimpanan data sementara
@@ -552,9 +296,10 @@ func urutDataDescedingHarga(data *tabsa, ndata int) { //untuk mengurutkan data s
 		pass = pass + 1
 	}
 }
+
 //function urutDataDescedingHarga masih dalam tahap pengerjaan//
 
-//function urutDataDescedingVolume masih dalam tahap pengerjaan//
+// function urutDataDescedingVolume masih dalam tahap pengerjaan//
 func urutDataDescedingVolume(data *tabsa, ndata int) { //untuk mengurutkan data saham dari besar ke kecil berdasarkan volume
 	var i, idx, pass int
 	var temp saham //penyimpanan data sementara
@@ -574,6 +319,7 @@ func urutDataDescedingVolume(data *tabsa, ndata int) { //untuk mengurutkan data 
 		pass = pass + 1
 	}
 }
+
 //function urutDataDescedingVolume masih dalam tahap pengerjaan//
 
 func pilihan() { //pengguna memilih akan melakukan apa
