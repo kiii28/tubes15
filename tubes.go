@@ -13,7 +13,7 @@ kita beranggapan bahwa tiap memjalankan applikasi ini adalah orang yang berbeda
 type pengguna struct {
 	nama, SahamDimiliki                                     string //saham yang disimpan dengan kode
 	nilaiSahamDimiliki, totalNilaiSahamDimiliki, untungRugi float64
-	lembarSahamDimiliki int
+	lembarSahamDimiliki                                     int
 }
 
 type transaksi struct {
@@ -161,7 +161,7 @@ func hapusSahamPengguna(index int) {
 func jual() {
 	var saham string
 	var jumlah, cariPe, cariSa int
-	var hargaPerLembar , totalJual float64
+	var hargaPerLembar, totalJual float64
 
 	fmt.Println("Ingin jual saham apa: ")
 	fmt.Scan(&saham)
@@ -236,8 +236,8 @@ func simulasiTrading() { //n untuk berapa lama menahan
 	fmt.Scan(&n)
 	for i := 1; i <= n; i++ {
 		random = rand.Intn(6) + 1
-		for j := 0; j < 10; j++ {
-			if j <= sahamPunya {
+		for j := 0; j < 10; j++ { //berhenti ketika seluruh daftar saham terupdate
+			if j <= sahamPunya { //kondisi update portofolio agar tidak melebihi saham yang dimiliki
 				hargaSebelum = portofolio[j].nilaiSahamDimiliki
 				nilaiSebelum = portofolio[j].totalNilaiSahamDimiliki
 			}
@@ -354,7 +354,7 @@ func pilihan() { //pengguna memilih akan melakukan apa
 			tampilkanDaftarSaham()
 		case 2: //fungsi porto
 			portofolioPengguna()
-		case 3: //
+		case 3:
 			beli()
 		case 4:
 			jual()
