@@ -13,6 +13,7 @@ kita beranggapan bahwa tiap memjalankan applikasi ini adalah orang yang berbeda
 type pengguna struct {
 	nama, SahamDimiliki                                     string //saham yang disimpan dengan kode
 	nilaiSahamDimiliki, totalNilaiSahamDimiliki, untungRugi float64
+	lembarSahamDimiliki int
 }
 
 type transaksi struct {
@@ -35,13 +36,13 @@ type tabst [1]statistik
 
 var daftarSaham tabsa
 var sahamPunya int = 0
+
 var statstk tabst
 var Transaksi tabtr
 var jumlahTransaksi int = 0
 
 var portofolio tabpe
 var jumlahPortofolio int = 0
-
 var saldo float64 = 10000000 //karena trading saham tanpa resiko nyata, asumsikan kita menyedikan uang virtual sebagai bahan pembelajaran
 
 func inisialisasiDataSaham() {
@@ -120,6 +121,7 @@ func beli() { //beli: nama saham, kode saham, beli berdasarkan lembar saham(buka
 					portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak)    // total semua saham yang dimiliki
 					portofolio[sahamPunya].nilaiSahamDimiliki = daftarSaham[cariSa].hargaSaham * float64(banyak) //hanya mencatat khusus
 					saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)                               //update sisa saldo
+					portofolio[sahamPunya].lembarSahamDimiliki = banyak
 					fmt.Printf("Anda sudah membeli saham  %s \n", pilih)
 					fmt.Printf("Saldo anda sekarang: Rp %.2f \n", saldo)
 					sahamPunya += 1 // kepemilikan jenis saham bertambah 1
@@ -130,6 +132,7 @@ func beli() { //beli: nama saham, kode saham, beli berdasarkan lembar saham(buka
 				if float64(banyak)*daftarSaham[cariSa].hargaSaham <= saldo { //jika saldo masih cukup
 					portofolio[0].totalNilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak) // total semua saham yang dimiliki
 					portofolio[cariPe].nilaiSahamDimiliki += daftarSaham[cariSa].hargaSaham * float64(banyak) // hanya mencatat khusus
+					portofolio[cariPe].lembarSahamDimiliki += banyak
 					saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)
 					fmt.Printf("Anda sudah memperbarui jumlah saham %s \n", pilih)
 					fmt.Printf("Saldo anda sekarang: Rp %.2f", saldo)
@@ -158,47 +161,66 @@ func hapusSahamPengguna(index int) {
 func jual() {
 	var saham string
 	var jumlah, cariPe, cariSa int
-	var cariNilai float64
+	var hargaPerLembar , totalJual float64
+
 	fmt.Println("Ingin jual saham apa: ")
 	fmt.Scan(&saham)
 	fmt.Println("Berapa banyak jumlah saham yang ingin dijual: ")
 	fmt.Scan(&jumlah)
+
 	cariPe = cariKodeSahamPengguna(portofolio, saham)
 	cariSa = cariKodeSaham(daftarSaham, saham)
-	if cariPe != -1 {
-		cariNilai = daftarSaham[cariSa].nilaiSaham
-		if portofolio[cariPe].nilaiSahamDimiliki-cariNilai*float64(jumlah) > 0 {
-			portofolio[cariPe].nilaiSahamDimiliki = portofolio[cariPe].nilaiSahamDimiliki - cariNilai*float64(jumlah)
-			portofolio[cariPe].totalNilaiSahamDimiliki = portofolio[cariPe].totalNilaiSahamDimiliki - cariNilai*float64(jumlah)
-			saldo = saldo + cariNilai*float64(jumlah)
-		} else {
-			saldo = saldo + cariNilai*float64(jumlah)
-			hapusSahamPengguna(cariPe)
-		}
+	if cariPe == -1 || cariSa == -1 {
+		fmt.Println("Saham tidak ditemukan dalam portofolio Anda.")
+		return
 	}
+
+	if jumlah > portofolio[cariPe].lembarSahamDimiliki {
+		fmt.Println("Anda tidak memiliki cukup lembar saham untuk dijual.")
+		return
+	}
+
+	hargaPerLembar = daftarSaham[cariSa].hargaSaham
+	totalJual = float64(jumlah) * hargaPerLembar
+
+	// update portofolio
+	portofolio[cariPe].lembarSahamDimiliki -= jumlah
+	portofolio[cariPe].nilaiSahamDimiliki -= totalJual
+	portofolio[cariPe].totalNilaiSahamDimiliki -= totalJual
+
+	saldo += totalJual
+
+	// hapus saham dari portofolio jika sudah 0 lembar
+	if portofolio[cariPe].lembarSahamDimiliki == 0 {
+		hapusSahamPengguna(cariPe)
+		fmt.Println("Saham dijual habis dan dihapus dari portofolio.")
+	} else {
+		fmt.Printf("Saham %s telah berhasil dijual sebanyak %d lembar.\n", saham, jumlah)
+	}
+	fmt.Printf("Saldo anda sekarang: Rp %.2f\n", saldo)
 }
 
 //Untuk yang function jual masih dalam proses pengerjaan//
 
 func portofolioPengguna() { //input nama pengguna lalu buat var saham dimiliki, nilai saham, keuntungan, kerugian
-	fmt.Println("--------------------------------------------------------------------------------------------------------------")
-	fmt.Printf("| %-20s | %-10s | %-20s | %-25s |\n", "NAMA", "KODE SAHAM", "NILAI SAHAM DIMILIKI", "TOTAL NILAI SAHAM DIMILIKI")
-	fmt.Println("--------------------------------------------------------------------------------------------------------------")
+	fmt.Println("----------------------------------------------------------------------------------------------------------------------")
+	fmt.Printf("| %-20s | %-10s | %-20s | %-25s | %-10s |\n", "NAMA", "KODE SAHAM", "NILAI SAHAM DIMILIKI", "TOTAL NILAI SAHAM DIMILIKI", "LEMBAR SAHAM DIMILIKI")
+	fmt.Println("----------------------------------------------------------------------------------------------------------------------")
 	for i := 0; i < sahamPunya; i++ {
 		if portofolio[i].SahamDimiliki != "" {
-			fmt.Printf("| %-20s | %-10s | Rp %-18.2f | Rp %-23.2f |\n", portofolio[i].nama, portofolio[i].SahamDimiliki, portofolio[i].nilaiSahamDimiliki, portofolio[i].totalNilaiSahamDimiliki)
+			fmt.Printf("| %-20s | %-10s | Rp %-18.2f | Rp %-23.2f | %-10d |\n", portofolio[i].nama, portofolio[i].SahamDimiliki, portofolio[i].nilaiSahamDimiliki, portofolio[i].totalNilaiSahamDimiliki, portofolio[i].lembarSahamDimiliki)
 		}
 	}
-	fmt.Println("--------------------------------------------------------------------------------------------------------------")
+	fmt.Println("----------------------------------------------------------------------------------------------------------------------")
 
 }
 func tampilkanStatistikUntungRugi() {
-	fmt.Println("\n-------------------------STATISTIK KEUNTUNGAN / KERUGIAAN --------------------------------------------------")
+	fmt.Println("\n-------------------------STATISTIK KEUNTUNGAN / KERUGIAAN ----------------------------------------------------------")
 	fmt.Printf("Total Keuntungan      : Rp %.2f\n", statstk[0].totalKeuntungan)
 	fmt.Printf("Total Kerugian        : Rp %.2f\n", statstk[0].totalKerugian)
 	fmt.Printf("Jumlah Harga Naik     : %.0f kali\n", statstk[0].naikHarga)
 	fmt.Printf("Jumlah Harga Turun    : %.0f kali\n", statstk[0].turunHarga)
-	fmt.Println("--------------------------------------------------------------------------------------------------------------")
+	fmt.Println("----------------------------------------------------------------------------------------------------------------------")
 
 }
 
@@ -348,6 +370,8 @@ func pilihan() { //pengguna memilih akan melakukan apa
 }
 
 func main() {
+	fmt.Print("Masukkan nama Anda: ")
+	fmt.Scan((&portofolio[0].nama))
 	inisialisasiDataSaham()
 	pilihan()
 
