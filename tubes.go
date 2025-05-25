@@ -13,61 +13,78 @@ kita beranggapan bahwa tiap memjalankan applikasi ini adalah orang yang berbeda
 type pengguna struct {
 	nama, SahamDimiliki                                     string //saham yang disimpan dengan kode
 	nilaiSahamDimiliki, totalNilaiSahamDimiliki, untungRugi float64
-	lembarSahamDimiliki                                     int
-}
+	lembarSahamDimiliki, indeksAsli                         int //indeks asli untuk shorting kembali ke awal
 
-type transaksi struct {
-	Pembelian, penjualan, lembarSaham int
-	namaTransaksi, idsaham            string
 }
 
 type saham struct {
 	id, namasaham                  string
 	volume, hargaSaham, nilaiSaham float64
+	indeksAsli                     int
 }
 type statistik struct {
 	totalKeuntungan, totalKerugian, naikHarga, turunHarga float64
 }
 
-type tabtr [150]transaksi //array transaksi
-type tabpe [15]pengguna   //array pengguna
-type tabsa [10]saham      // array saham
+type tabpe [15]pengguna //array pengguna
+type tabsa [10]saham    // array saham
 type tabst [1]statistik
 
 var daftarSaham tabsa
 var sahamPunya int = 0
 
 var statstk tabst
-var Transaksi tabtr
 var jumlahTransaksi int = 0
 
 var portofolio tabpe
 var jumlahPortofolio int = 0
+var indeksBenar int = 0
 var saldo float64 = 10000000 //karena trading saham tanpa resiko nyata, asumsikan kita menyedikan uang virtual sebagai bahan pembelajaran
 
 func inisialisasiDataSaham() {
-	daftarSaham[0] = saham{id: "BBCA", namasaham: "Bank Central Asia", hargaSaham: 9275, volume: 1800000, nilaiSaham: 16695000000000} //Harga Saham dalam 1 lebar saham
-	daftarSaham[1] = saham{id: "BBRI", namasaham: "Bank rakyat Indonesia", hargaSaham: 4260, volume: 2300000, nilaiSaham: 9798000000000}
-	daftarSaham[2] = saham{id: "BMRI", namasaham: "Bank Mandiri", hargaSaham: 5275, volume: 1650000, nilaiSaham: 8703750000000}
-	daftarSaham[3] = saham{id: "TLKM", namasaham: "Telkom Indonesia", hargaSaham: 2660, volume: 2750000, nilaiSaham: 7315000000000}
-	daftarSaham[4] = saham{id: "ASII", namasaham: "Astra Indonesia", hargaSaham: 4820, volume: 2750000, nilaiSaham: 13255000000000}
-	daftarSaham[5] = saham{id: "UNVR", namasaham: "Uniliver Indonesia", hargaSaham: 4500, volume: 800000, nilaiSaham: 3600000000000}
-	daftarSaham[6] = saham{id: "ICBP", namasaham: "Indofood CBP Sukses Makmur", hargaSaham: 10000, volume: 670000, nilaiSaham: 6700000000000}
-	daftarSaham[7] = saham{id: "ADRO", namasaham: "Adaro Energy Indonesia", hargaSaham: 3000, volume: 3450000, nilaiSaham: 10350000000000}
-	daftarSaham[8] = saham{id: "AKRA", namasaham: "AKR Corpindo", hargaSaham: 1300, volume: 1120000, nilaiSaham: 1456000000000}
-	daftarSaham[9] = saham{id: "ACES", namasaham: "Ace Hardware Indonesia", hargaSaham: 545, volume: 1234500, nilaiSaham: 672352500000}
+	daftarSaham[0] = saham{id: "BBCA", namasaham: "Bank Central Asia", hargaSaham: 9275, volume: 1800000, nilaiSaham: 16695000000000, indeksAsli: 0} //Harga Saham dalam 1 lebar saham
+	daftarSaham[1] = saham{id: "BBRI", namasaham: "Bank rakyat Indonesia", hargaSaham: 4260, volume: 2300000, nilaiSaham: 9798000000000, indeksAsli: 1}
+	daftarSaham[2] = saham{id: "BMRI", namasaham: "Bank Mandiri", hargaSaham: 5275, volume: 1650000, nilaiSaham: 8703750000000, indeksAsli: 2}
+	daftarSaham[3] = saham{id: "TLKM", namasaham: "Telkom Indonesia", hargaSaham: 2660, volume: 2750000, nilaiSaham: 7315000000000, indeksAsli: 3}
+	daftarSaham[4] = saham{id: "ASII", namasaham: "Astra Indonesia", hargaSaham: 4820, volume: 2750000, nilaiSaham: 13255000000000, indeksAsli: 4}
+	daftarSaham[5] = saham{id: "UNVR", namasaham: "Uniliver Indonesia", hargaSaham: 4500, volume: 800000, nilaiSaham: 3600000000000, indeksAsli: 5}
+	daftarSaham[6] = saham{id: "ICBP", namasaham: "Indofood CBP Sukses Makmur", hargaSaham: 10000, volume: 670000, nilaiSaham: 6700000000000, indeksAsli: 6}
+	daftarSaham[7] = saham{id: "ADRO", namasaham: "Adaro Energy Indonesia", hargaSaham: 3000, volume: 3450000, nilaiSaham: 10350000000000, indeksAsli: 7}
+	daftarSaham[8] = saham{id: "AKRA", namasaham: "AKR Corpindo", hargaSaham: 1300, volume: 1120000, nilaiSaham: 1456000000000, indeksAsli: 8}
+	daftarSaham[9] = saham{id: "ACES", namasaham: "Ace Hardware Indonesia", hargaSaham: 545, volume: 1234500, nilaiSaham: 672352500000, indeksAsli: 9}
 }
 
 func tampilkanDaftarSaham() { // Daftar-daftar saham yang dapat dibeli
-	fmt.Println("--------------------------------------------------------------------------------------------------")
+	var pilih int
+	fmt.Println("---------------------------------------------------------------------------------------------------")
 	fmt.Printf("| %-5s | %-27s | Rp %-15s | %-15s | %-18s |\n", "KODE", "NAMA", "HARGA SAHAM", "VOLUME", "NILAI SAHAM")
-	fmt.Println("--------------------------------------------------------------------------------------------------")
+	fmt.Println("---------------------------------------------------------------------------------------------------")
 	for i := 0; i < 10; i++ {
-		if daftarSaham[i].id != "" {
+		if daftarSaham[i].id != "" { //memastikan yang di print hanya array yang memiliki nilai
 			fmt.Printf("| %-5s | %-27s | Rp %-15.2f | %-15.2f | %-18.2f |\n", daftarSaham[i].id, daftarSaham[i].namasaham, daftarSaham[i].hargaSaham, daftarSaham[i].volume, daftarSaham[i].nilaiSaham)
 		}
 	}
 	fmt.Println("---------------------------------------------------------------------------------------------------")
+
+	fmt.Printf("Pilih: \n1. Sorting mengecil berdasarkan Harga. \n2. Sorting mengecil berdasarkan Volume. \n3. Sorting membesar berdasarkan Harga.\n4. Sorting membesar berdasarkan Volume. \n5. Kembali.\n")
+	fmt.Scan(&pilih)
+	if pilih == 1 {
+		urutDataDescedingHarga(&daftarSaham, 10)
+		tampilkanDaftarSaham()
+	} else if pilih == 2 {
+		urutDataDescedingVolume(&daftarSaham, 10)
+		tampilkanDaftarSaham()
+	} else if pilih == 3 {
+		ascendingInsertionsortHargaSa(&daftarSaham, 10)
+		tampilkanDaftarSaham()
+	} else if pilih == 4 {
+		ascendingInsertionsortVolume(&daftarSaham, 10)
+		tampilkanDaftarSaham()
+	} else {
+		urutDataAwal(&daftarSaham, 10)
+
+	}
+
 }
 func cariKodeSaham(dataSaham tabsa, searchKey string) int { // funsi cari di array saham
 	var idx, i int
@@ -103,7 +120,7 @@ func beli() { //beli: nama saham, kode saham, beli berdasarkan lembar saham(buka
 	var pilih string
 	var cariPe, cariSa, banyak int
 	fmt.Printf("Saldo anda : Rp %.2f", saldo)
-	fmt.Println("Masukkan kode sama yang ingin dibeli, 'buka' untuk melihat daftar: ")
+	fmt.Println("Masukkan kode saham yang ingin dibeli, 'buka' untuk melihat daftar: ")
 	fmt.Scan(&pilih)
 	switch pilih {
 	case "buka": //pilihan ini akan membuka daftar saham
@@ -122,9 +139,11 @@ func beli() { //beli: nama saham, kode saham, beli berdasarkan lembar saham(buka
 					portofolio[sahamPunya].nilaiSahamDimiliki = daftarSaham[cariSa].hargaSaham * float64(banyak) //hanya mencatat khusus
 					saldo = saldo - daftarSaham[cariSa].hargaSaham*float64(banyak)                               //update sisa saldo
 					portofolio[sahamPunya].lembarSahamDimiliki = banyak
+					portofolio[sahamPunya].indeksAsli = indeksBenar
 					fmt.Printf("Anda sudah membeli saham  %s \n", pilih)
 					fmt.Printf("Saldo anda sekarang: Rp %.2f \n", saldo)
 					sahamPunya += 1 // kepemilikan jenis saham bertambah 1
+					indeksBenar += 1
 				} else {
 					fmt.Println("Saldo anda tidak mencukupi, pembelian gagal!")
 				}
@@ -148,13 +167,15 @@ func beli() { //beli: nama saham, kode saham, beli berdasarkan lembar saham(buka
 }
 func hapusSahamPengguna(index int) {
 	var i int = index
+	portofolio[index].totalNilaiSahamDimiliki = portofolio[index].totalNilaiSahamDimiliki - portofolio[index].nilaiSahamDimiliki
+
 	for i < 10 {
 		portofolio[i].nilaiSahamDimiliki = portofolio[i+1].nilaiSahamDimiliki
 		portofolio[i].SahamDimiliki = portofolio[i+1].SahamDimiliki
 		i++
 	}
-	portofolio[index].totalNilaiSahamDimiliki = portofolio[index].totalNilaiSahamDimiliki - portofolio[index].nilaiSahamDimiliki
-
+	portofolio[sahamPunya-1] = pengguna{} // Membersihkan slot terakhir
+	sahamPunya--
 }
 
 // Untuk yang function jual masih dalam proses pengerjaan//
@@ -218,8 +239,8 @@ func tampilkanStatistikUntungRugi() {
 	fmt.Println("\n-------------------------STATISTIK KEUNTUNGAN / KERUGIAAN ----------------------------------------------------------")
 	fmt.Printf("Total Keuntungan      : Rp %.2f\n", statstk[0].totalKeuntungan)
 	fmt.Printf("Total Kerugian        : Rp %.2f\n", statstk[0].totalKerugian)
-	fmt.Printf("Jumlah Harga Naik     : %.0f kali\n", statstk[0].naikHarga)
-	fmt.Printf("Jumlah Harga Turun    : %.0f kali\n", statstk[0].turunHarga)
+	fmt.Printf("Jumlah Harga Naik     : %.0f kali untuk per-%d saham\n", statstk[0].naikHarga, sahamPunya)
+	fmt.Printf("Jumlah Harga Turun    : %.0f kali untuk per-%d saham\n", statstk[0].turunHarga, sahamPunya)
 	fmt.Println("----------------------------------------------------------------------------------------------------------------------")
 
 }
@@ -235,6 +256,7 @@ func simulasiTrading() { //n untuk berapa lama menahan
 	fmt.Println("Simulasi pergerakan harga saham sebanyak 1 perbulan, ingin menahan berapa lama: ")
 	fmt.Scan(&n)
 	for i := 1; i <= n; i++ {
+		rand.Seed(int64(i + 4*n))
 		random = rand.Intn(6) + 1
 		for j := 0; j < 10; j++ { //berhenti ketika seluruh daftar saham terupdate
 			if j <= sahamPunya { //kondisi update portofolio agar tidak melebihi saham yang dimiliki
@@ -319,7 +341,25 @@ func urutDataDescedingHarga(data *tabsa, ndata int) { //untuk mengurutkan data s
 	}
 }
 
-//function urutDataDescedingHarga masih dalam tahap pengerjaan//
+func urutDataAwal(data *tabsa, ndata int) { //untuk mengurutkan data saham kembali ke setingan awal
+	var i, idx, pass int
+	var temp saham //penyimpanan data sementara
+	pass = 1
+	for pass < ndata {
+		idx = pass - 1
+		i = pass
+		for i < ndata {
+			if (*data)[i].indeksAsli < (*data)[idx].indeksAsli {
+				idx = i
+			}
+			i = i + 1
+		}
+		temp = (*data)[pass-1]
+		(*data)[pass-1] = (*data)[idx]
+		(*data)[idx] = temp
+		pass = pass + 1
+	}
+}
 
 // function urutDataDescedingVolume masih dalam tahap pengerjaan//
 func urutDataDescedingVolume(data *tabsa, ndata int) { //untuk mengurutkan data saham dari besar ke kecil berdasarkan volume
@@ -341,12 +381,41 @@ func urutDataDescedingVolume(data *tabsa, ndata int) { //untuk mengurutkan data 
 		pass = pass + 1
 	}
 }
-
-//function urutDataDescedingVolume masih dalam tahap pengerjaan//
+func ascendingInsertionsortVolume(a *tabsa, n int) {
+	var i, pass int
+	var temp saham
+	pass = 1
+	for pass <= n-1 {
+		i = pass
+		temp = (*a)[pass]
+		for i > 0 && temp.volume < (*a)[i-1].volume {
+			(*a)[i] = (*a)[i-1]
+			i = i - 1
+		}
+		(*a)[i] = temp
+		pass = pass + 1
+	}
+}
+func ascendingInsertionsortHargaSa(a *tabsa, n int) {
+	var i, pass int
+	var temp saham
+	pass = 1
+	for pass <= n-1 {
+		i = pass
+		temp = (*a)[pass]
+		for i > 0 && temp.hargaSaham < (*a)[i-1].hargaSaham {
+			(*a)[i] = (*a)[i-1]
+			i = i - 1
+		}
+		(*a)[i] = temp
+		pass = pass + 1
+	}
+}
 
 func pilihan() { //pengguna memilih akan melakukan apa
 	for {
 		var pilih int
+		fmt.Println("=======MENU UTAMA=======")
 		fmt.Printf("Pilih hal apa yang akan anda lakukan: \n1. Tampilkan daftar saham. \n2. Tampilkan portofolio anda. \n3. Beli saham. \n4. Jual saham. \n5. Tampilkan statistik keuntungan/kerugian. \n6. Melakukan simulasi saham. \n7. Keluar.")
 		fmt.Scan(&pilih)
 		switch pilih {
@@ -362,8 +431,10 @@ func pilihan() { //pengguna memilih akan melakukan apa
 			tampilkanStatistikUntungRugi()
 		case 6:
 			simulasiTrading()
-		default:
+		case 7:
 			return
+		default:
+			fmt.Println("Pilihan tidak valid!")
 		}
 		fmt.Println()
 	}
@@ -374,5 +445,6 @@ func main() {
 	fmt.Scan((&portofolio[0].nama))
 	inisialisasiDataSaham()
 	pilihan()
+	fmt.Println("Terima kasih telah menggunakan applikasi simulasi saham ini !!!")
 
 }
