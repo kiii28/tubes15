@@ -86,7 +86,10 @@ func tampilkanDaftarSaham() { // Daftar-daftar saham yang dapat dibeli
 	}
 
 }
+
+/*
 func cariKodeSaham(dataSaham tabsa, searchKey string) int { // funsi cari di array saham
+
 	var idx, i int
 	idx = -1
 	i = 0
@@ -100,6 +103,31 @@ func cariKodeSaham(dataSaham tabsa, searchKey string) int { // funsi cari di arr
 	return idx
 
 }
+*/
+func cariKodeSaham(a tabsa, n int, x string) int { //mencari kode saham dengan menggunakan binary search
+	var left, right, idx, mid, idxasli int //syarat binary search adalah data harus terurut
+	mengurutkanidsaham(&a, n)              //jadi biar dapat digunakan idnya diurutin dulu
+	left = 0
+	right = n - 1
+	idx = -1
+	for left <= right && idx == -1 {
+		mid = (left + right) / 2
+		if x < a[mid].id {
+			right = mid - 1
+		} else if x > a[mid].id {
+			left = mid + 1
+		} else {
+			idx = mid
+		}
+	}
+	if idx == -1 {
+		return -1
+	}
+	idxasli = a[idx].indeksAsli //karena sudah menyimpan data indeks yang asli / urutan awal jadi ketika di kembalikan pada urutan awal data dalam indeks tetap sama
+	urutDataAwal(&a, 10)        //dikembalikan pada urutan awal
+	return idxasli
+}
+
 func cariKodeSahamPengguna(dataSaham tabpe, searchKey string) int { // funsi cari di array pengguna
 	var idx, i int
 	idx = -1
@@ -127,9 +155,9 @@ func beli() { //beli: nama saham, kode saham, beli berdasarkan lembar saham(buka
 		tampilkanDaftarSaham()
 	default: //pilihan ini akan melakukan transaksi pembelian
 		fmt.Println("Anda ingin membeli berapa lembar saham: ")
-		fmt.Scan(&banyak)                          // banyak lembar saham yang akan di beli
-		cariSa = cariKodeSaham(daftarSaham, pilih) //akan mencari kode saham di daftar saham
-		if cariSa != -1 {                          //ketika kode saham ditemukan
+		fmt.Scan(&banyak)                              // banyak lembar saham yang akan di beli
+		cariSa = cariKodeSaham(daftarSaham, 10, pilih) //akan mencari kode saham di daftar saham
+		if cariSa != -1 {                              //ketika kode saham ditemukan
 			cariPe = cariKodeSahamPengguna(portofolio, pilih) // mencari kode saham di portofolio apakah pengguna sudah memiliki saham tersebut atau tidak
 
 			if cariPe == -1 { // -1 berarti pengguna belum memiliki saham tersebut
@@ -190,7 +218,7 @@ func jual() {
 	fmt.Scan(&jumlah)
 
 	cariPe = cariKodeSahamPengguna(portofolio, saham)
-	cariSa = cariKodeSaham(daftarSaham, saham)
+	cariSa = cariKodeSaham(daftarSaham, 10, saham)
 	if cariPe == -1 || cariSa == -1 {
 		fmt.Println("Saham tidak ditemukan dalam portofolio Anda.")
 		return
@@ -207,7 +235,7 @@ func jual() {
 	// update portofolio
 	portofolio[cariPe].lembarSahamDimiliki -= jumlah
 	portofolio[cariPe].nilaiSahamDimiliki -= totalJual
-	portofolio[cariPe].totalNilaiSahamDimiliki -= totalJual
+	portofolio[0].totalNilaiSahamDimiliki -= totalJual
 
 	saldo += totalJual
 
@@ -253,6 +281,9 @@ func simulasiTrading() { //n untuk berapa lama menahan
 	var n, random int
 	var hargaSebelum, nilaiSebelum float64
 	var selisihHarga, selisihNilai float64
+	var adanaik, adaturun bool
+	adanaik = false
+	adaturun = false
 	fmt.Println("Simulasi pergerakan harga saham sebanyak 1 perbulan, ingin menahan berapa lama: ")
 	fmt.Scan(&n)
 	for i := 1; i <= n; i++ {
@@ -306,18 +337,38 @@ func simulasiTrading() { //n untuk berapa lama menahan
 				selisihHarga = portofolio[j].nilaiSahamDimiliki - hargaSebelum
 				selisihNilai = portofolio[0].totalNilaiSahamDimiliki - nilaiSebelum
 
-				if selisihHarga > 0 {
+				if selisihHarga > 0 { //update nanti menyelesaikan permasalahan naik/turun
 					statstk[0].totalKeuntungan += selisihNilai
-					statstk[0].naikHarga++
+					adanaik = true
 				} else if selisihHarga < 0 {
 					statstk[0].totalKerugian += -selisihNilai
-					statstk[0].turunHarga++
+					adaturun = true
 				}
 			}
+		}
+		if adanaik {
+			statstk[0].naikHarga++
+		} else if adaturun {
+			statstk[0].turunHarga++
 		}
 
 	}
 	fmt.Println("Harga telah diperbarui.")
+}
+func mengurutkanidsaham(a *tabsa, n int) {
+	var i, pass int
+	var temp saham
+	pass = 1
+	for pass <= n-1 {
+		i = pass
+		temp = (*a)[pass]
+		for i > 0 && temp.id < (*a)[i-1].id {
+			(*a)[i] = (*a)[i-1]
+			i = i - 1
+		}
+		(*a)[i] = temp
+		pass = pass + 1
+	}
 }
 
 // function urutDataDescedingHarga masih dalam tahap pengerjaan//
@@ -415,8 +466,9 @@ func ascendingInsertionsortHargaSa(a *tabsa, n int) {
 func pilihan() { //pengguna memilih akan melakukan apa
 	for {
 		var pilih int
-		fmt.Println("=======MENU UTAMA=======")
-		fmt.Printf("Pilih hal apa yang akan anda lakukan: \n1. Tampilkan daftar saham. \n2. Tampilkan portofolio anda. \n3. Beli saham. \n4. Jual saham. \n5. Tampilkan statistik keuntungan/kerugian. \n6. Melakukan simulasi saham. \n7. Keluar.")
+		fmt.Println("===================MENU UTAMA===================")
+		fmt.Printf("  Pilih hal apa yang akan anda lakukan: \n  1. Tampilkan daftar saham. \n  2. Tampilkan portofolio anda. \n  3. Beli saham. \n  4. Jual saham. \n  5. Tampilkan statistik keuntungan/kerugian. \n  6. Melakukan simulasi saham. \n  7. Keluar.\n")
+		fmt.Println("================================================")
 		fmt.Scan(&pilih)
 		switch pilih {
 		case 1: //memanggil fungsi daftar saham
