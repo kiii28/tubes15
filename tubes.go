@@ -29,7 +29,7 @@ type statistik struct {
 type tabpe [15]pengguna //array pengguna
 type tabsa [10]saham    // array saham
 type tabst [1]statistik
-
+var nData int = 10
 var daftarSaham tabsa
 var sahamPunya int = 0
 
@@ -69,19 +69,19 @@ func tampilkanDaftarSaham() { // Daftar-daftar saham yang dapat dibeli
 	fmt.Printf("Pilih: \n1. Sorting mengecil berdasarkan Harga. \n2. Sorting mengecil berdasarkan Volume. \n3. Sorting membesar berdasarkan Harga.\n4. Sorting membesar berdasarkan Volume. \n5. Kembali.\n")
 	fmt.Scan(&pilih)
 	if pilih == 1 {
-		urutDataDescedingHarga(&daftarSaham, 10)
+		urutDataDescedingHarga(&daftarSaham, nData)
 		tampilkanDaftarSaham()
 	} else if pilih == 2 {
-		urutDataDescedingVolume(&daftarSaham, 10)
+		urutDataDescedingVolume(&daftarSaham, nData)
 		tampilkanDaftarSaham()
 	} else if pilih == 3 {
-		ascendingInsertionsortHargaSa(&daftarSaham, 10)
+		ascendingInsertionsortHargaSa(&daftarSaham, nData)
 		tampilkanDaftarSaham()
 	} else if pilih == 4 {
-		ascendingInsertionsortVolume(&daftarSaham, 10)
+		ascendingInsertionsortVolume(&daftarSaham, nData)
 		tampilkanDaftarSaham()
 	} else {
-		urutDataAwal(&daftarSaham, 10)
+		urutDataAwal(&daftarSaham, nData)
 
 	}
 
@@ -120,7 +120,8 @@ func cariKodeSaham(a tabsa, n int, x string) int { //mencari kode saham dengan m
 			idx = mid
 		}
 	}
-	if idx == -1 {
+	if idx == -1 { //dilakkan pengecekan jika -1 
+		urutDataAwal(&a, 10) 
 		return -1
 	}
 	idxasli = a[idx].indeksAsli //karena sudah menyimpan data indeks yang asli / urutan awal jadi ketika di kembalikan pada urutan awal data dalam indeks tetap sama
@@ -132,7 +133,7 @@ func cariKodeSahamPengguna(dataSaham tabpe, searchKey string) int { // funsi car
 	var idx, i int
 	idx = -1
 	i = 0
-	for idx == -1 && i < 10 {
+	for idx == -1 && i < nData {
 		if dataSaham[i].SahamDimiliki == searchKey {
 			idx = i
 
@@ -156,7 +157,7 @@ func beli() { //beli: nama saham, kode saham, beli berdasarkan lembar saham(buka
 	default: //pilihan ini akan melakukan transaksi pembelian
 		fmt.Println("Anda ingin membeli berapa lembar saham: ")
 		fmt.Scan(&banyak)                              // banyak lembar saham yang akan di beli
-		cariSa = cariKodeSaham(daftarSaham, 10, pilih) //akan mencari kode saham di daftar saham
+		cariSa = cariKodeSaham(daftarSaham, nData, pilih) //akan mencari kode saham di daftar saham
 		if cariSa != -1 {                              //ketika kode saham ditemukan
 			cariPe = cariKodeSahamPengguna(portofolio, pilih) // mencari kode saham di portofolio apakah pengguna sudah memiliki saham tersebut atau tidak
 
@@ -218,7 +219,7 @@ func jual() {
 	fmt.Scan(&jumlah)
 
 	cariPe = cariKodeSahamPengguna(portofolio, saham)
-	cariSa = cariKodeSaham(daftarSaham, 10, saham)
+	cariSa = cariKodeSaham(daftarSaham, nData, saham)
 	if cariPe == -1 || cariSa == -1 {
 		fmt.Println("Saham tidak ditemukan dalam portofolio Anda.")
 		return
@@ -267,8 +268,8 @@ func tampilkanStatistikUntungRugi() {
 	fmt.Println("\n-------------------------STATISTIK KEUNTUNGAN / KERUGIAAN ----------------------------------------------------------")
 	fmt.Printf("Total Keuntungan      : Rp %.2f\n", statstk[0].totalKeuntungan)
 	fmt.Printf("Total Kerugian        : Rp %.2f\n", statstk[0].totalKerugian)
-	fmt.Printf("Jumlah Harga Naik     : %.0f kali untuk per-%d saham\n", statstk[0].naikHarga, sahamPunya)
-	fmt.Printf("Jumlah Harga Turun    : %.0f kali untuk per-%d saham\n", statstk[0].turunHarga, sahamPunya)
+	fmt.Printf("Jumlah Harga Naik     : %.0f kali \n", statstk[0].naikHarga)
+	fmt.Printf("Jumlah Harga Turun    : %.0f kali \n", statstk[0].turunHarga)
 	fmt.Println("----------------------------------------------------------------------------------------------------------------------")
 
 }
@@ -289,7 +290,7 @@ func simulasiTrading() { //n untuk berapa lama menahan
 	for i := 1; i <= n; i++ {
 		rand.Seed(int64(i + 4*n))
 		random = rand.Intn(6) + 1
-		for j := 0; j < 10; j++ { //berhenti ketika seluruh daftar saham terupdate
+		for j := 0; j < nData; j++ { //berhenti ketika seluruh daftar saham terupdate
 			if j <= sahamPunya { //kondisi update portofolio agar tidak melebihi saham yang dimiliki
 				hargaSebelum = portofolio[j].nilaiSahamDimiliki
 				nilaiSebelum = portofolio[j].totalNilaiSahamDimiliki
