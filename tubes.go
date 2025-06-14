@@ -42,6 +42,7 @@ var jumlahPortofolio int = 0
 var indeksBenar int = 0
 var saldo float64 = 10000000 //karena trading saham tanpa resiko nyata, asumsikan kita menyedikan uang virtual sebagai bahan pembelajaran
 
+// funsi untuk inisialisasi data saham
 func inisialisasiDataSaham() {
 	daftarSaham[0] = saham{id: "BBCA", namasaham: "Bank Central Asia", hargaSaham: 9275, volume: 1800000, nilaiSaham: 16695000000000, indeksAsli: 0} //Harga Saham dalam 1 lebar saham
 	daftarSaham[1] = saham{id: "BBRI", namasaham: "Bank rakyat Indonesia", hargaSaham: 4260, volume: 2300000, nilaiSaham: 9798000000000, indeksAsli: 1}
@@ -55,6 +56,8 @@ func inisialisasiDataSaham() {
 	daftarSaham[9] = saham{id: "ACES", namasaham: "Ace Hardware Indonesia", hargaSaham: 545, volume: 1234500, nilaiSaham: 672352500000, indeksAsli: 9}
 }
 
+// fungsi untuk menampilkan daftar saham yang dapat dibeli
+// fungsi ini juga akan menampilkan pilihan untuk mengurutkan data berdasarkan harga atau volume
 func tampilkanDaftarSaham() { // Daftar-daftar saham yang dapat dibeli
 	var pilih int
 	fmt.Println("---------------------------------------------------------------------------------------------------")
@@ -105,6 +108,7 @@ func cariKodeSaham(dataSaham tabsa, searchKey string) int { // funsi cari di arr
 
 }
 */
+//fungsi untuk mencari kode saham dengan menggunakan binary search
 func cariKodeSaham(a tabsa, n int, x string) int { //mencari kode saham dengan menggunakan binary search
 	var left, right, idx, mid, idxasli int //syarat binary search adalah data harus terurut
 	mengurutkanidsaham(&a, n)              //jadi biar dapat digunakan idnya diurutin dulu
@@ -130,6 +134,7 @@ func cariKodeSaham(a tabsa, n int, x string) int { //mencari kode saham dengan m
 	return idxasli
 }
 
+// fungsi untuk mencari kode saham yang ada pada protofolio pengguna
 func cariKodeSahamPengguna(dataSaham tabpe, searchKey string) int { // funsi cari di array pengguna
 	var idx, i int
 	idx = -1
@@ -145,6 +150,7 @@ func cariKodeSahamPengguna(dataSaham tabpe, searchKey string) int { // funsi car
 
 }
 
+// fungsi untuk membeli saham,
 func beli() { //beli: nama saham, kode saham, beli berdasarkan lembar saham(bukan nilai dlm rupiah) dan pastikan saldo masih cukup,
 
 	var pilih string
@@ -195,6 +201,8 @@ func beli() { //beli: nama saham, kode saham, beli berdasarkan lembar saham(buka
 
 	}
 }
+
+// funghsi untuk menghapus saham di daftar protofolio pengguna
 func hapusSahamPengguna(index int) {
 	var i int = index
 	portofolio[index].totalNilaiSahamDimiliki = portofolio[index].totalNilaiSahamDimiliki - portofolio[index].nilaiSahamDimiliki
@@ -208,7 +216,7 @@ func hapusSahamPengguna(index int) {
 	sahamPunya--
 }
 
-// Untuk yang function jual masih dalam proses pengerjaan//
+// fungsi untuk menjual saham
 func jual() {
 	var saham string
 	var jumlah, cariPe, cariSa int
@@ -251,20 +259,21 @@ func jual() {
 	fmt.Printf("Saldo anda sekarang: Rp %.2f\n", saldo)
 }
 
-//Untuk yang function jual masih dalam proses pengerjaan//
-
+// fungsi untuk menampilkan portofolio pengguna
 func portofolioPengguna() { //input nama pengguna lalu buat var saham dimiliki, nilai saham, keuntungan, kerugian
-	fmt.Println("----------------------------------------------------------------------------------------------------------------------")
+	fmt.Println("-----------------------------------------------------------------------------------------------------------------")
 	fmt.Printf("| %-20s | %-10s | %-20s | %-25s | %-10s |\n", "NAMA", "KODE SAHAM", "NILAI SAHAM DIMILIKI", "TOTAL NILAI SAHAM DIMILIKI", "LEMBAR SAHAM DIMILIKI")
-	fmt.Println("----------------------------------------------------------------------------------------------------------------------")
+	fmt.Println("-----------------------------------------------------------------------------------------------------------------")
 	for i := 0; i < sahamPunya; i++ {
 		if portofolio[i].SahamDimiliki != "" {
 			fmt.Printf("| %-20s | %-10s | Rp %-18.2f | Rp %-23.2f | %-10d |\n", portofolio[i].nama, portofolio[i].SahamDimiliki, portofolio[i].nilaiSahamDimiliki, portofolio[i].totalNilaiSahamDimiliki, portofolio[i].lembarSahamDimiliki)
 		}
 	}
-	fmt.Println("----------------------------------------------------------------------------------------------------------------------")
+	fmt.Println("-----------------------------------------------------------------------------------------------------------------")
 
 }
+
+// fungsi untuk menamppilkan statistik keuntungan dan kerugian
 func tampilkanStatistikUntungRugi() {
 	fmt.Println("\n-------------------------STATISTIK KEUNTUNGAN / KERUGIAAN ----------------------------------------------------------")
 	fmt.Printf("Total Keuntungan      : Rp %.2f\n", statstk[0].totalKeuntungan)
@@ -275,11 +284,12 @@ func tampilkanStatistikUntungRugi() {
 
 }
 
+// fungsi untuk mensimulasikan trading saham, dengan asumsi bahwa harga saham naik/turun secara acak dalam n bulan
 func simulasiTrading() { //n untuk berapa lama menahan
-	/* idenya adalah asumsikan bahwa naik turun harga saham memiliki kemungkinan untung 3 : 1 rugi
-	anggap kita mempunya angka random 1-5 dengan jika dapat 1 tidak ada perubahan jika dapat 2 Harga turun sekian dalam %
+	/* idenya adalah asumsikan bahwa naik turun harga saham memiliki kemungkinan untung 3 : 2 rugi
+	anggap kita mempunya angka random 1-6 dengan jika dapat 1 tidak ada perubahan jika dapat 2 Harga turun sekian dalam %
 	jika dapat 3-5 harga naik sekian dalam %. anggap tiap kenaikkan adalah dalam rentang 1 bulan sehingga masukkan
-	misal 4 jadi kita seperti perkembangan harga saham dalam 4 bulan atau 4 kali naik / turun */
+	misal 4 jadi kita seperti melihat perkembangan harga saham dalam 4 bulan atau 4 kali naik / turun */
 	var n, random int
 	var hargaSebelum, nilaiSebelum float64
 	var selisihHarga, selisihNilai, berubah float64
@@ -367,6 +377,8 @@ func simulasiTrading() { //n untuk berapa lama menahan
 	}
 	fmt.Println("Harga telah diperbarui.")
 }
+
+// fungsi untuk mengurutkan id saham
 func mengurutkanidsaham(a *tabsa, n int) {
 	var i, pass int
 	var temp saham
@@ -383,7 +395,7 @@ func mengurutkanidsaham(a *tabsa, n int) {
 	}
 }
 
-// function urutDataDescedingHarga masih dalam tahap pengerjaan//
+// kumpulan fungsi untuk mengurutkan data saham berdasarkan harga, volume, dan data awal secara descending menggunakan selection sort
 func urutDataDescedingHarga(data *tabsa, ndata int) { //untuk mengurutkan data saham dari besar ke kecil berdasarkan Harga saham
 	var i, idx, pass int
 	var temp saham //penyimpanan data sementara
@@ -424,7 +436,6 @@ func urutDataAwal(data *tabsa, ndata int) { //untuk mengurutkan data saham kemba
 	}
 }
 
-// function urutDataDescedingVolume masih dalam tahap pengerjaan//
 func urutDataDescedingVolume(data *tabsa, ndata int) { //untuk mengurutkan data saham dari besar ke kecil berdasarkan volume
 	var i, idx, pass int
 	var temp saham //penyimpanan data sementara
@@ -444,6 +455,8 @@ func urutDataDescedingVolume(data *tabsa, ndata int) { //untuk mengurutkan data 
 		pass = pass + 1
 	}
 }
+
+// kumpulan fungsi untuk mengurutkan data saham berdasarkan harga, volume secara ascending menggunakan insertion sort
 func ascendingInsertionsortVolume(a *tabsa, n int) {
 	var i, pass int
 	var temp saham
@@ -475,6 +488,7 @@ func ascendingInsertionsortHargaSa(a *tabsa, n int) {
 	}
 }
 
+// fungsi untuk menampilkam menu utama
 func pilihan() { //pengguna memilih akan melakukan apa
 	for {
 		var pilih int
@@ -483,9 +497,9 @@ func pilihan() { //pengguna memilih akan melakukan apa
 		fmt.Println("================================================")
 		fmt.Scan(&pilih)
 		switch pilih {
-		case 1: //memanggil fungsi daftar saham
+		case 1:
 			tampilkanDaftarSaham()
-		case 2: //fungsi porto
+		case 2:
 			portofolioPengguna()
 		case 3:
 			beli()
@@ -498,12 +512,14 @@ func pilihan() { //pengguna memilih akan melakukan apa
 		case 7:
 			return
 		default:
+
 			fmt.Println("Pilihan tidak valid!")
 		}
 		fmt.Println()
 	}
 }
 
+// program utama
 func main() {
 	fmt.Print("Masukkan nama Anda: ")
 	fmt.Scan((&portofolio[0].nama))
