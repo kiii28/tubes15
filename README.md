@@ -29,7 +29,7 @@ c. Pengguna dapat mencari saham berdasarkan kode atau nama perusahaan
 menggunakan Sequential dan Binary Search. 
 Diimplementasikan pada fungsi:
 
-//sebagai binary search \n
+//sebagai binary search 
 cariKodeSaham(),   
 //sebagai sequential search
 cariKodeSahamPengguna().    
