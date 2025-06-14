@@ -29,6 +29,7 @@ type statistik struct {
 type tabpe [15]pengguna //array pengguna
 type tabsa [10]saham    // array saham
 type tabst [1]statistik
+
 var nData int = 10
 var daftarSaham tabsa
 var sahamPunya int = 0
@@ -120,8 +121,8 @@ func cariKodeSaham(a tabsa, n int, x string) int { //mencari kode saham dengan m
 			idx = mid
 		}
 	}
-	if idx == -1 { //dilakkan pengecekan jika -1 
-		urutDataAwal(&a, 10) 
+	if idx == -1 { //dilakkan pengecekan jika -1
+		urutDataAwal(&a, 10)
 		return -1
 	}
 	idxasli = a[idx].indeksAsli //karena sudah menyimpan data indeks yang asli / urutan awal jadi ketika di kembalikan pada urutan awal data dalam indeks tetap sama
@@ -156,9 +157,9 @@ func beli() { //beli: nama saham, kode saham, beli berdasarkan lembar saham(buka
 		tampilkanDaftarSaham()
 	default: //pilihan ini akan melakukan transaksi pembelian
 		fmt.Println("Anda ingin membeli berapa lembar saham: ")
-		fmt.Scan(&banyak)                              // banyak lembar saham yang akan di beli
+		fmt.Scan(&banyak)                                 // banyak lembar saham yang akan di beli
 		cariSa = cariKodeSaham(daftarSaham, nData, pilih) //akan mencari kode saham di daftar saham
-		if cariSa != -1 {                              //ketika kode saham ditemukan
+		if cariSa != -1 {                                 //ketika kode saham ditemukan
 			cariPe = cariKodeSahamPengguna(portofolio, pilih) // mencari kode saham di portofolio apakah pengguna sudah memiliki saham tersebut atau tidak
 
 			if cariPe == -1 { // -1 berarti pengguna belum memiliki saham tersebut
@@ -281,7 +282,7 @@ func simulasiTrading() { //n untuk berapa lama menahan
 	misal 4 jadi kita seperti perkembangan harga saham dalam 4 bulan atau 4 kali naik / turun */
 	var n, random int
 	var hargaSebelum, nilaiSebelum float64
-	var selisihHarga, selisihNilai float64
+	var selisihHarga, selisihNilai, berubah float64
 	var adanaik, adaturun bool
 	adanaik = false
 	adaturun = false
@@ -290,62 +291,72 @@ func simulasiTrading() { //n untuk berapa lama menahan
 	for i := 1; i <= n; i++ {
 		rand.Seed(int64(i + 4*n))
 		random = rand.Intn(6) + 1
+		nilaiSebelum = portofolio[0].totalNilaiSahamDimiliki
 		for j := 0; j < nData; j++ { //berhenti ketika seluruh daftar saham terupdate
-			if j <= sahamPunya { //kondisi update portofolio agar tidak melebihi saham yang dimiliki
+			if j < sahamPunya { //kondisi update portofolio agar tidak melebihi saham yang dimiliki
 				hargaSebelum = portofolio[j].nilaiSahamDimiliki
-				nilaiSebelum = portofolio[j].totalNilaiSahamDimiliki
+
 			}
 			switch random {
 			case 1:
 				// tidak ada perubahan
 			case 2:
-				daftarSaham[j].hargaSaham *= 0.98 // turun 2%
-				daftarSaham[j].nilaiSaham *= 0.98
-				if j <= sahamPunya {
-					portofolio[j].nilaiSahamDimiliki *= 0.98
-					portofolio[0].totalNilaiSahamDimiliki *= 0.98
+				berubah = 0.98
+				daftarSaham[j].hargaSaham *= berubah // turun 2%
+				daftarSaham[j].nilaiSaham *= berubah
+				if j < sahamPunya {
+					portofolio[j].nilaiSahamDimiliki *= berubah
+
 				}
 			case 3:
-				daftarSaham[j].hargaSaham *= 1.03 // naik 3%
-				daftarSaham[j].nilaiSaham *= 1.03
-				if j <= sahamPunya {
-					portofolio[j].nilaiSahamDimiliki *= 1.03
-					portofolio[0].totalNilaiSahamDimiliki *= 1.03
+				berubah = 1.03
+				daftarSaham[j].hargaSaham *= berubah // naik 3%
+				daftarSaham[j].nilaiSaham *= berubah
+				if j < sahamPunya {
+					portofolio[j].nilaiSahamDimiliki *= berubah
+
 				}
 			case 4:
-				daftarSaham[j].hargaSaham *= 1.04 // naik 4%
-				daftarSaham[j].nilaiSaham *= 1.04
-				if j <= sahamPunya {
-					portofolio[j].nilaiSahamDimiliki *= 1.04
-					portofolio[0].totalNilaiSahamDimiliki *= 1.04
+				berubah = 1.04
+				daftarSaham[j].hargaSaham *= berubah // naik 4%
+				daftarSaham[j].nilaiSaham *= berubah
+				if j < sahamPunya {
+					portofolio[j].nilaiSahamDimiliki *= berubah
+
 				}
 			case 5:
-				daftarSaham[j].hargaSaham *= 1.05 // naik 5%
-				daftarSaham[j].nilaiSaham *= 1.05
-				if j <= sahamPunya {
-					portofolio[j].nilaiSahamDimiliki *= 1.05
-					portofolio[0].totalNilaiSahamDimiliki *= 1.05
+				berubah = 1.05
+				daftarSaham[j].hargaSaham *= berubah // naik 5%
+				daftarSaham[j].nilaiSaham *= berubah
+				if j < sahamPunya {
+					portofolio[j].nilaiSahamDimiliki *= berubah
+
 				}
 			case 6:
-				daftarSaham[j].hargaSaham *= 0.97 // turun 3%
-				daftarSaham[j].nilaiSaham *= 0.97
-				if j <= sahamPunya {
-					portofolio[j].nilaiSahamDimiliki *= 0.97
-					portofolio[0].totalNilaiSahamDimiliki *= 0.97
-				}
-			}
-			if j <= sahamPunya {
-				selisihHarga = portofolio[j].nilaiSahamDimiliki - hargaSebelum
-				selisihNilai = portofolio[0].totalNilaiSahamDimiliki - nilaiSebelum
+				berubah = 0.97
+				daftarSaham[j].hargaSaham *= berubah // turun 3%
+				daftarSaham[j].nilaiSaham *= berubah
+				if j < sahamPunya {
+					portofolio[j].nilaiSahamDimiliki *= berubah
 
-				if selisihHarga > 0 { //update nanti menyelesaikan permasalahan naik/turun
-					statstk[0].totalKeuntungan += selisihNilai
-					adanaik = true
-				} else if selisihHarga < 0 {
-					statstk[0].totalKerugian += -selisihNilai
-					adaturun = true
 				}
 			}
+
+			if j < sahamPunya {
+				selisihHarga = portofolio[j].nilaiSahamDimiliki - hargaSebelum
+
+			}
+
+		}
+
+		portofolio[0].totalNilaiSahamDimiliki *= berubah
+		selisihNilai = portofolio[0].totalNilaiSahamDimiliki - nilaiSebelum
+		if selisihHarga > 0 { //update nanti menyelesaikan permasalahan naik/turun
+			statstk[0].totalKeuntungan += selisihNilai
+			adanaik = true
+		} else if selisihHarga < 0 {
+			statstk[0].totalKerugian += -selisihNilai
+			adaturun = true
 		}
 		if adanaik {
 			statstk[0].naikHarga++
