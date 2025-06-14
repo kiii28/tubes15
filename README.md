@@ -15,7 +15,7 @@ Diimplementasikan pada fungsi:
 
 beli(), 
 jual(), 
-hapusSahamPengguna(index int). 
+hapusSahamPengguna(). 
 
 
 
@@ -29,8 +29,10 @@ c. Pengguna dapat mencari saham berdasarkan kode atau nama perusahaan
 menggunakan Sequential dan Binary Search. 
 Diimplementasikan pada fungsi:
 
-cariKodeSaham(a tabsa, n int, x string),    //sebagai binary search
-cariKodeSahamPengguna(dataSaham tabpe, searchKey string).    //sebagai sequential search
+//sebagai binary search
+cariKodeSaham(),   
+//sebagai sequential search
+cariKodeSahamPengguna().    
 
 
 
@@ -39,13 +41,15 @@ transaksi menggunakan Selection dan Insertion Sort.
 Diimplementasikan pada fungsi:
 
 //ascending menggunakan insetion sort   
-ascendingInsertionsortHargaSa(a *tabsa, n int), 
-ascendingInsertionsortVolume(a *tabsa, n int), 
+ascendingInsertionsortHargaSa(), 
+ascendingInsertionsortVolume(), 
 
 //descending menggunakan selection sort   
-urutDataDescedingHarga(data *tabsa, ndata int), 
-urutDataDescedingVolume(data *tabsa, ndata int), 
-urutDataAwal(data *tabsa, ndata int).     //untuk mengurutkan data kembali ke setingan awal
+urutDataDescedingHarga(), 
+urutDataDescedingVolume(), 
+
+//untuk mengurutkan data kembali ke setingan awal
+urutDataAwal().
 
 
 
