@@ -13,9 +13,9 @@ a. Pengguna dapat menambahkan, mengubah, dan menghapus transaksi
 pembelian dan penjualan saham. 
 Diimplementasikan pada fungsi:
 
-beli(), 
-jual(), 
-hapusSahamPengguna(). 
+ -beli(), 
+ -jual(), 
+ -hapusSahamPengguna(). 
 
 
 
@@ -23,16 +23,16 @@ b. Sistem menghitung perubahan nilai portofolio berdasarkan fluktuasi harga
 saham. 
 
 diimplementasikan pada fungsi:
-simulasiTrading(). 
+ -simulasiTrading(). 
 
 c. Pengguna dapat mencari saham berdasarkan kode atau nama perusahaan 
 menggunakan Sequential dan Binary Search. 
 Diimplementasikan pada fungsi:
 
 //sebagai binary search 
-cariKodeSaham(),   
+ -cariKodeSaham(),   
 //sebagai sequential search
-cariKodeSahamPengguna().    
+ -cariKodeSahamPengguna().    
 
 
 
@@ -41,15 +41,15 @@ transaksi menggunakan Selection dan Insertion Sort.
 Diimplementasikan pada fungsi:
 
 //ascending menggunakan insetion sort   
-ascendingInsertionsortHargaSa(), 
-ascendingInsertionsortVolume(), 
+ -ascendingInsertionsortHargaSa(), 
+ -ascendingInsertionsortVolume(), 
 
 //descending menggunakan selection sort   
-urutDataDescedingHarga(), 
-urutDataDescedingVolume(), 
+ -urutDataDescedingHarga(), 
+ -urutDataDescedingVolume(), 
 
 //untuk mengurutkan data kembali ke setingan awal
-urutDataAwal().
+ -urutDataAwal().
 
 
 
